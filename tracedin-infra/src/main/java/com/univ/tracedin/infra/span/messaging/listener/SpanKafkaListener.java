@@ -18,7 +18,7 @@ import com.univ.tracedin.infra.kafka.KafkaConsumer;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SpanCollectedKafkaListener implements KafkaConsumer<TraceId, SpanCollectedEvent> {
+public class SpanKafkaListener implements KafkaConsumer<TraceId, SpanCollectedEvent> {
 
     private final SpanAppender spanAppender;
 
