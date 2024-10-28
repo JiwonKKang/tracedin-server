@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-alpine as build
+FROM eclipse-temurin:17-jdk as build
 WORKDIR /workspace/app
 
 # 환경변수 추가
@@ -8,14 +8,14 @@ ARG VERSION=0.0.1
 
 COPY ../.. .
 
+RUN ./gradlew :tracedin-application:${MODULE_NAME}:clean
 RUN ./gradlew :tracedin-application:${MODULE_NAME}:build --parallel -x test
 RUN mkdir -p ${MODULE_PATH}/build/extracted && (java -Djarmode=layertools -jar ${MODULE_PATH}/build/libs/${MODULE_NAME}-${VERSION}.jar extract --destination ${MODULE_PATH}/build/extracted)
 
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:17-jdk
 VOLUME /tmp
 
-RUN apk update
-RUN apk --no-cache add curl # for health check
+RUN apt-get update && apt-get install -y curl
 
 ARG MODULE_PATH=tracedin-application/app-api
 ARG EXTRACTED=/workspace/app/${MODULE_PATH}/build/extracted

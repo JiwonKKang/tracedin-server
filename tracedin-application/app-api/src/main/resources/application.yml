@@ -37,3 +37,6 @@ spring:
 jwt:
   access-token:
     expiration: 25920000
+grpc:
+  server:
+    port: 6565

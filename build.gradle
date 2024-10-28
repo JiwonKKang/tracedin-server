@@ -46,6 +46,7 @@ subprojects {
 
     spotless {
         java {
+            targetExclude 'build/generated/**/*.java'
             googleJavaFormat().aosp()
             importOrder('java', 'javax', 'jakarta', 'org', 'lombok', 'com')
             removeUnusedImports()
