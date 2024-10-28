@@ -17,7 +17,7 @@ public class SpanService {
     private final SpanReader spanReader;
     private final SpanMessagePublisher spanMessagePublisher;
 
-    public void publishSpans(List<Span> spans) {
+    public void appendSpans(List<Span> spans) {
         spanMessagePublisher.publish(SpanCollectedEvent.from(spans));
     }
 

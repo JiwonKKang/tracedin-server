@@ -1,5 +1,7 @@
 package com.univ.tracedin.api.span.grpc;
 
+import static com.univ.tracedin.api.global.util.GrpcMappingUtils.convertValue;
+
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -35,7 +37,7 @@ public class SpanGrpc extends SpanGrpcAppenderImplBase {
             AppendSpansRequest request, StreamObserver<AppendSpanResponse> responseObserver) {
         try {
             log.info("appendSpans request: {}", request.toString());
-            spanService.publishSpans(request.getSpansList().stream().map(this::toSpan).toList());
+            spanService.appendSpans(request.getSpansList().stream().map(this::toSpan).toList());
             responseObserver.onNext(AppendSpanResponse.newBuilder().setStatusCode(200).build());
         } catch (Exception e) {
             log.error("Failed to append spans", e);
@@ -68,7 +70,9 @@ public class SpanGrpc extends SpanGrpcAppenderImplBase {
                                                 .collect(
                                                         Collectors.toMap(
                                                                 Map.Entry::getKey,
-                                                                Map.Entry::getValue)))
+                                                                entry ->
+                                                                        convertValue(
+                                                                                entry.getValue()))))
                                 .capacity(span.getAttributes().getCapacity())
                                 .totalAddedValues(span.getAttributes().getTotalAddedValues())
                                 .build())
