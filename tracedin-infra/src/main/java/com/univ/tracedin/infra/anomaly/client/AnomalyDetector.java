@@ -11,9 +11,18 @@ public class AnomalyDetector implements AnomalyDetectionClient {
 
     @Override
     public AnomalyTraceResult detect(List<Span> traceSpans) {
+
+        List<Span> anomalySpans =
+                traceSpans.stream().filter(span -> span.getTiming().duration() > 1000).toList();
+
+        boolean isAnomaly = !anomalySpans.isEmpty();
+
         return new AnomalyTraceResult(
-                true,
-                "1206887328-a7863a66-528e-4f37-b805-04e1314fb924",
-                traceSpans.stream().map(span -> span.getId().getValue()).toList());
+                isAnomaly,
+                traceSpans.stream()
+                        .map(Span::getProjectKey)
+                        .findAny()
+                        .orElse("1206887328-a7863a66-528e-4f37-b805-04e1314fb924"),
+                anomalySpans.stream().map(span -> span.getId().getValue()).toList());
     }
 }

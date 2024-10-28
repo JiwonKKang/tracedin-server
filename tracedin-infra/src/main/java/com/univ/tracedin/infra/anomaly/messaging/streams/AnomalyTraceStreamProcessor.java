@@ -42,7 +42,6 @@ public class AnomalyTraceStreamProcessor {
         JsonSerde<List<Span>> listOfSpanSerde = new JsonSerde<>(new TypeReference<>() {});
 
         // Stream processor - SpanCollectedEvent를 받아서 TraceId로 그루핑한뒤 각 TraceId에 대한 Span들을 List로 묶어서
-        // KTable로 만듦
         KStream<TraceId, Span> spanStream =
                 stream.flatMap(
                         (key, value) -> {
@@ -57,6 +56,7 @@ public class AnomalyTraceStreamProcessor {
         TimeWindows timeWindows =
                 TimeWindows.ofSizeAndGrace(Duration.ofMinutes(1), Duration.ofSeconds(30));
 
+        // KTable로 만듦
         KTable<Windowed<TraceId>, List<Span>> traceTable =
                 spanStream
                         .groupByKey()
