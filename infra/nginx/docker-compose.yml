@@ -1,0 +1,9 @@
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./conf.d:/etc/nginx/conf.d  # Nginx 설정 파일
+      - ./nginx/log:/var/log/nginx  # 로그 파일

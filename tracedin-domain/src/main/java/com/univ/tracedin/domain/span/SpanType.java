@@ -22,6 +22,6 @@ public enum SpanType {
                 return type;
             }
         }
-        throw new IllegalArgumentException("Unknown span type: " + value);
+        return UNKNOWN;
     }
 }

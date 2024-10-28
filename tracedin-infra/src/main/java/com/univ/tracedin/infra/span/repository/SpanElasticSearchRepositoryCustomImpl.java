@@ -3,6 +3,7 @@ package com.univ.tracedin.infra.span.repository;
 import static com.univ.tracedin.infra.elasticsearch.ESUtils.executeESQuery;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -254,6 +255,7 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                             double tps = bucket.aggregations().get("tps").simpleValue().value();
                             httpTpsList.add(HttpTps.of(startEpochMillis, tps));
                         });
+        httpTpsList.sort(Comparator.comparing(HttpTps::timestamp).reversed());
         return httpTpsList;
     }
 

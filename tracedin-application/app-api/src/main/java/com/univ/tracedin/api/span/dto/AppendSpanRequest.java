@@ -13,6 +13,8 @@ import com.univ.tracedin.domain.span.SpanTiming;
 import com.univ.tracedin.domain.span.SpanType;
 import com.univ.tracedin.domain.span.TraceId;
 
+import io.micrometer.common.util.StringUtils;
+
 public record AppendSpanRequest(
         String serviceName,
         String projectKey,
@@ -68,7 +70,8 @@ public record AppendSpanRequest(
     }
 
     private SpanType getSpanType() {
-        SpanType type = spanType == null ? SpanType.UNKNOWN : SpanType.fromValue(spanType);
+        SpanType type =
+                StringUtils.isBlank(spanType) ? SpanType.UNKNOWN : SpanType.fromValue(spanType);
         if (attributes.data().containsKey("db.operation")) {
             type = SpanType.QUERY;
         }

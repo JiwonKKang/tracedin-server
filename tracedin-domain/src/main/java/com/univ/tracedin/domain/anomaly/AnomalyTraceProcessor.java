@@ -2,7 +2,6 @@ package com.univ.tracedin.domain.anomaly;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -40,11 +39,13 @@ public class AnomalyTraceProcessor {
 
     private Alert createAnomalyAlert(AnomalyTrace anomalyTrace) {
         Project project = projectReader.readByKey(anomalyTrace.projectKey());
-        Map<String, String> details = new HashMap<>();
-        details.put("traceId", anomalyTrace.traceId().getValue());
-        details.put(
-                "anomalySpanIds",
-                anomalyTrace.anomalySpanIds().stream().map(SpanId::getValue).toList().toString());
+        HashMap<String, String> details =
+                new HashMap<>() {
+                    {
+                        put("traceId", anomalyTrace.traceId().getValue());
+                        put("anomalySpanIds", getSpanIdToString(anomalyTrace));
+                    }
+                };
         return Alert.create("트랜잭션에 이상치가 탐지되었습니다!", project.getId(), details);
     }
 
@@ -55,5 +56,9 @@ public class AnomalyTraceProcessor {
                     .map(Span::setAnomaly)
                     .forEach(spanUpdater::update);
         }
+    }
+
+    private String getSpanIdToString(AnomalyTrace anomalyTrace) {
+        return anomalyTrace.anomalySpanIds().stream().map(SpanId::getValue).toList().toString();
     }
 }
