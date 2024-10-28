@@ -36,7 +36,6 @@ public class SpanGrpc extends SpanGrpcAppenderImplBase {
     public void appendSpans(
             AppendSpansRequest request, StreamObserver<AppendSpanResponse> responseObserver) {
         try {
-            log.info("appendSpans request: {}", request.toString());
             spanService.appendSpans(request.getSpansList().stream().map(this::toSpan).toList());
             responseObserver.onNext(AppendSpanResponse.newBuilder().setStatusCode(200).build());
         } catch (Exception e) {

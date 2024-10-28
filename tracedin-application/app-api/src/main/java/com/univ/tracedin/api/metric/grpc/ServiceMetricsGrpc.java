@@ -1,7 +1,5 @@
 package com.univ.tracedin.api.metric.grpc;
 
-import static com.univ.tracedin.api.global.util.GrpcMappingUtils.convertValue;
-
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,7 +32,6 @@ public class ServiceMetricsGrpc extends ServiceMetricsGrpcAppenderImplBase {
             AppendServiceMetricsRequest request,
             StreamObserver<AppendServiceMetricsResponse> responseObserver) {
         try {
-            log.info("appendServiceMetrics request: {}", request.toString());
             serviceMetricsService.appendMetrics(toServiceMetrics(request));
             responseObserver.onNext(
                     AppendServiceMetricsResponse.newBuilder().setStatusCode(200).build());
@@ -68,10 +65,7 @@ public class ServiceMetricsGrpc extends ServiceMetricsGrpcAppenderImplBase {
                 .max(metricRequest.getMax())
                 .attributes(
                         metricRequest.getAttributesMap().entrySet().stream()
-                                .collect(
-                                        Collectors.toMap(
-                                                Map.Entry::getKey,
-                                                entry -> convertValue(entry.getValue()))))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)))
                 .timestamp(LocalDateTime.now())
                 .build();
     }

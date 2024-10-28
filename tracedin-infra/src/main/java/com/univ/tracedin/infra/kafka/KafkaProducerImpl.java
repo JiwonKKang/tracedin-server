@@ -34,17 +34,8 @@ public class KafkaProducerImpl<K extends Serializable, V extends Serializable>
             kafkaResultFuture.whenComplete(
                     (result, ex) -> {
                         if (ex != null) {
-                            log.error(
-                                    "Error while sending message to kafka with key: {}, message: {} and exception: {}",
-                                    key,
-                                    message,
-                                    ex.getMessage());
                             callback.completeExceptionally(ex);
                         } else {
-                            log.info(
-                                    "Message sent successfully to kafka with key: {}, message: {}",
-                                    key,
-                                    message);
                             callback.complete(result);
                         }
                     });
