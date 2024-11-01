@@ -38,10 +38,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         try {
-            Optional<String> refreshToken = JwtTokenizer.extractRefreshToken(request);
+            final Optional<String> refreshToken = JwtTokenizer.extractRefreshToken(request);
 
             if (refreshToken.isPresent()) {
-                UserPrincipal principal = JwtTokenizer.extractPrincipal(refreshToken.get());
+                final UserPrincipal principal = JwtTokenizer.extractPrincipal(refreshToken.get());
                 validateRefreshToken(principal, refreshToken.get());
                 reIssueToken(principal, response);
                 return;
@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             JwtTokenizer.extractAccessToken(request)
                     .map(JwtTokenizer::extractPrincipal)
-                    .ifPresent(this::saveAuthentication);
+                    .ifPresent(JwtAuthenticationFilter::saveAuthentication);
 
         } catch (Exception e) {
             log.error(e.toString());
@@ -60,28 +60,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     public void validateRefreshToken(UserPrincipal principal, String givenRefreshToken) {
-        RefreshToken validRefreshToken = tokenCache.get(principal.userId());
+        final RefreshToken validRefreshToken = tokenCache.get(principal.userId());
         if (validRefreshToken.notEquals(givenRefreshToken)) {
             throw InvalidTokenException.EXCEPTION;
         }
     }
 
     private void reIssueToken(UserPrincipal principal, HttpServletResponse response) {
-        String reIssuedAccessToken = JwtTokenizer.generateAccessToken(principal);
-        String reIssuedRefreshToken = JwtTokenizer.generateRefreshToken(principal);
+        final String reIssuedAccessToken = JwtTokenizer.generateAccessToken(principal);
+        final String reIssuedRefreshToken = JwtTokenizer.generateRefreshToken(principal);
         tokenCache.cache(RefreshToken.of(principal.userId(), reIssuedRefreshToken));
         JwtTokenizer.setInHeader(response, reIssuedAccessToken, reIssuedRefreshToken);
         response.setStatus(HttpServletResponse.SC_CREATED);
     }
 
-    private void saveAuthentication(UserPrincipal principal) {
-        UsernamePasswordAuthenticationToken authentication =
+    private static void saveAuthentication(UserPrincipal principal) {
+        final UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(principal, null, getAuthorities(principal));
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    private List<GrantedAuthority> getAuthorities(UserPrincipal principal) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
+    private static List<GrantedAuthority> getAuthorities(UserPrincipal principal) {
+        final List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + principal.role().name()));
         return authorities;
     }

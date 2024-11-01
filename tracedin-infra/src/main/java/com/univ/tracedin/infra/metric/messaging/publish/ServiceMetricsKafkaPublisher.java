@@ -21,6 +21,7 @@ public class ServiceMetricsKafkaPublisher implements ServiceMetricsMessagePublis
     @Value("${kafka.topic.service-metrics}")
     private String serviceMetricsTopic;
 
+    @Override
     public void publish(ServiceMetricsCollectedEvent serviceMetricsCollectedEvent) {
         kafkaProducer.send(
                 serviceMetricsTopic,

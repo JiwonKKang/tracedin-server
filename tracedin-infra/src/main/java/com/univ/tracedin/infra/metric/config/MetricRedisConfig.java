@@ -28,7 +28,7 @@ public class MetricRedisConfig {
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer(
             MessageListenerAdapter listenerAdapter) {
-        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        final RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory);
         container.addMessageListener(listenerAdapter, new PatternTopic(METRIC_CHANNEL_ID));
         return container;
@@ -42,7 +42,7 @@ public class MetricRedisConfig {
 
     @Bean
     public RedisTemplate<String, ServiceMetrics> notificationTemplate() {
-        RedisTemplate<String, ServiceMetrics> redisTemplate = new RedisTemplate<>();
+        final RedisTemplate<String, ServiceMetrics> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(

@@ -35,7 +35,7 @@ public class SlackAlertClient implements AlertClient {
     public void sendAlert(String contact, Alert alert) {
 
         try {
-            WebhookResponse response = slackClient.send(contact, buildPayload(alert));
+            final WebhookResponse response = slackClient.send(contact, buildPayload(alert));
 
             if (response.getCode() != 200) {
                 log.error("Failed to send alert to slack. Response: {}", response);
@@ -54,8 +54,8 @@ public class SlackAlertClient implements AlertClient {
     }
 
     private Payload buildPayload(Alert alert) {
-        String link = generateLink(alert);
-        String messageText = alert.getTitle() + "\n자세한 내용은 " + link + "를 클릭하세요.";
+        final String link = generateLink(alert);
+        final String messageText = alert.getTitle() + "\n자세한 내용은 " + link + "를 클릭하세요.";
 
         return Payload.builder()
                 .text(messageText)
@@ -64,15 +64,15 @@ public class SlackAlertClient implements AlertClient {
     }
 
     private String generateLink(Alert alert) {
-        String traceId = alert.getDetails().get("traceId");
-        String encodedTraceId = URLEncoder.encode(traceId, StandardCharsets.UTF_8);
-        String url = serverUrl + "/api/v1/spans/span-tree?traceId=" + encodedTraceId;
-        String linkText = "여기";
+        final String traceId = alert.getDetails().get("traceId");
+        final String encodedTraceId = URLEncoder.encode(traceId, StandardCharsets.UTF_8);
+        final String url = serverUrl + "/api/v1/spans/span-tree?traceId=" + encodedTraceId;
+        final String linkText = "여기";
 
-        return "<" + url + "|" + linkText + ">";
+        return '<' + url + '|' + linkText + '>';
     }
 
-    private List<Attachment> buildAttachments(Map<String, String> details) {
+    private static List<Attachment> buildAttachments(Map<String, String> details) {
         return details.entrySet().stream()
                 .map(
                         entry ->

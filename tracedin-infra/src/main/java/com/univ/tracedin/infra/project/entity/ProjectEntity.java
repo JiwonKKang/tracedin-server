@@ -36,8 +36,8 @@ public class ProjectEntity {
     private String projectKey;
 
     public static ProjectEntity from(Project project) {
-        Long id = (project.getId() == null) ? null : project.getId().getValue();
-        return ProjectEntity.builder()
+        final Long id = (project.getId() == null) ? null : project.getId().getValue();
+        return builder()
                 .id(id)
                 .name(project.getInfo().projectName())
                 .description(project.getInfo().description())

@@ -5,6 +5,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -27,6 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class LogAspect {
 
+    private static final Pattern PATTERN = Pattern.compile("\\.");
+
     @Pointcut(
             "execution(* com.univ.tracedin.domain..*(..)) || execution(* com.univ.tracedin.infra..*(..)) && !execution(* com.univ.tracedin.common..*(..))")
     public void all() {}
@@ -37,29 +40,29 @@ public class LogAspect {
 
     @Around("all()")
     public Object logging(ProceedingJoinPoint joinPoint) throws Throwable {
-        long start = System.currentTimeMillis();
+        final long start = System.currentTimeMillis();
         try {
             return joinPoint.proceed();
         } finally {
-            long end = System.currentTimeMillis();
-            long timeinMs = end - start;
+            final long end = System.currentTimeMillis();
+            final long timeinMs = end - start;
             log.info("{} | time = {}ms", joinPoint.getSignature(), timeinMs);
         }
     }
 
     @Around("controller()")
     public Object loggingBefore(ProceedingJoinPoint joinPoint) throws Throwable {
-        HttpServletRequest request =
+        final HttpServletRequest request =
                 ((ServletRequestAttributes)
                                 Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
                         .getRequest();
 
-        String controllerName = joinPoint.getSignature().getDeclaringType().getName();
-        String methodName = joinPoint.getSignature().getName();
-        Map<String, Object> params = new HashMap<>();
+        final String controllerName = joinPoint.getSignature().getDeclaringType().getName();
+        final String methodName = joinPoint.getSignature().getName();
+        final Map<String, Object> params = new HashMap<>();
 
         try {
-            String decodedURI = URLDecoder.decode(request.getRequestURI(), "UTF-8");
+            final String decodedURI = URLDecoder.decode(request.getRequestURI(), "UTF-8");
 
             params.put("controller", controllerName);
             params.put("method", methodName);
@@ -75,17 +78,15 @@ public class LogAspect {
         log.info("method: {}.{}", params.get("controller"), params.get("method"));
         log.info("params: {}", params.get("params"));
 
-        Object result = joinPoint.proceed();
-
-        return result;
+        return joinPoint.proceed();
     }
 
     private static JSONObject getParams(HttpServletRequest request) throws JSONException {
-        JSONObject jsonObject = new JSONObject();
-        Enumeration<String> params = request.getParameterNames();
+        final JSONObject jsonObject = new JSONObject();
+        final Enumeration<String> params = request.getParameterNames();
         while (params.hasMoreElements()) {
-            String param = params.nextElement();
-            String replaceParam = param.replaceAll("\\.", "-");
+            final String param = params.nextElement();
+            final String replaceParam = PATTERN.matcher(param).replaceAll("-");
             jsonObject.put(replaceParam, request.getParameter(param));
         }
         return jsonObject;

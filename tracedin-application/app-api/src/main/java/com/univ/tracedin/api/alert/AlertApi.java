@@ -25,23 +25,27 @@ public class AlertApi implements AlertApiDocs {
 
     private final AlertService alertService;
 
+    @Override
     @PostMapping("/methods")
     public Response<Void> appendAlertMethod(AppendAlertMethodRequest request) {
         alertService.appendMethod(request.toAlertInfo());
         return Response.success();
     }
 
+    @Override
     @GetMapping("/methods")
     public Response<List<AlertMethod>> getAllAlertMethods(Long projectId) {
         return Response.success(alertService.readAllMethods(ProjectId.from(projectId)));
     }
 
+    @Override
     @PatchMapping("/methods/{alertMethodId}/deactivate")
     public Response<Void> deactivateAlertMethod(@PathVariable Long alertMethodId) {
         alertService.deactivateMethod(AlertMethodId.from(alertMethodId));
         return Response.success();
     }
 
+    @Override
     @PatchMapping("/methods/{alertMethodId}/activate")
     public Response<Void> activateAlertMethod(@PathVariable Long alertMethodId) {
         alertService.activateMethod(AlertMethodId.from(alertMethodId));

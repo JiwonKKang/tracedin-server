@@ -18,9 +18,9 @@ public class UserAuthenticator {
     private final RefreshTokenCache refreshTokenCache;
 
     public Tokens authenticate(LoginInfo login) {
-        User user = userReader.read(login.email());
+        final User user = userReader.read(login.email());
         validatePassword(login, user);
-        Tokens tokens = tokenGenerator.generate(user.getPrincipal());
+        final Tokens tokens = tokenGenerator.generate(user.getPrincipal());
         refreshTokenCache.cache(tokens.getRefreshToken(user));
         return tokens;
     }

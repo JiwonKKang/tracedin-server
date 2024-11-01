@@ -119,7 +119,7 @@ public class SpanDocument implements Serializable {
         private Integer totalAddedValues;
 
         public static Attributes from(SpanAttributes spanAttributes) {
-            return Attributes.builder()
+            return builder()
                     .data(spanAttributes.data())
                     .capacity(spanAttributes.capacity())
                     .totalAddedValues(spanAttributes.totalAddedValues())

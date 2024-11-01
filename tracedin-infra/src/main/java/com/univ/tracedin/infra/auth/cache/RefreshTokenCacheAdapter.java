@@ -1,5 +1,6 @@
 package com.univ.tracedin.infra.auth.cache;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -19,19 +20,20 @@ public class RefreshTokenCacheAdapter implements RefreshTokenCache {
 
     @Override
     public void cache(RefreshToken refreshToken) {
-        String key = getKey(refreshToken.userId());
+        final String key = getKey(refreshToken.userId());
         log.info("Set Refresh Token from {} : {}", key, refreshToken);
         template.opsForValue().set(key, refreshToken);
     }
 
+    @Nullable
     @Override
     public RefreshToken get(UserId id) {
-        String key = getKey(id);
+        final String key = getKey(id);
         log.info("Get Refresh Token from {}", key);
         return template.opsForValue().get(key);
     }
 
-    private String getKey(UserId userId) {
+    private static String getKey(UserId userId) {
         return "USER_REFRESH_TOKEN:" + userId.getValue();
     }
 }

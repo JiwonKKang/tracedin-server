@@ -12,10 +12,10 @@ public class AnomalyDetector implements AnomalyDetectionClient {
     @Override
     public AnomalyTraceResult detect(List<Span> traceSpans) {
 
-        List<Span> anomalySpans =
+        final List<Span> anomalySpans =
                 traceSpans.stream().filter(span -> span.getTiming().duration() > 1000).toList();
 
-        boolean isAnomaly = !anomalySpans.isEmpty();
+        final boolean isAnomaly = !anomalySpans.isEmpty();
 
         return new AnomalyTraceResult(
                 isAnomaly,

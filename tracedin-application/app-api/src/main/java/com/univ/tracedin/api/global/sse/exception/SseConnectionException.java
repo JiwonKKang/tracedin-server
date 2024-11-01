@@ -2,7 +2,7 @@ package com.univ.tracedin.api.global.sse.exception;
 
 import com.univ.tracedin.common.exception.WebException;
 
-public class SseConnectionException extends WebException {
+public final class SseConnectionException extends WebException {
 
     public static final WebException EXCEPTION = new SseConnectionException();
 

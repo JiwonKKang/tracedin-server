@@ -16,8 +16,8 @@ public class ProjectReader {
     private final ProjectMemberManager projectMemberManager;
 
     public List<Project> readAll(User user) {
-        List<ProjectMember> projectMembers = projectMemberManager.readAll(user);
-        List<ProjectId> projectIds =
+        final List<ProjectMember> projectMembers = projectMemberManager.readAll(user);
+        final List<ProjectId> projectIds =
                 projectMembers.stream().map(ProjectMember::getProjectId).toList();
         return projectRepository.findAllByIds(projectIds);
     }

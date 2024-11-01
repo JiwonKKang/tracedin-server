@@ -15,7 +15,7 @@ public class ProjectMemberManager {
     private final ProjectRepository projectRepository;
 
     public void add(Project project, User targetMember, ProjectMember.MemberRole role) {
-        ProjectMember projectMember =
+        final ProjectMember projectMember =
                 ProjectMember.create(project.getId(), targetMember.getId(), role);
         projectRepository.saveProjectMember(projectMember);
     }

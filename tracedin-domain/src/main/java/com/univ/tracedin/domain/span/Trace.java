@@ -12,7 +12,7 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Trace {
+public final class Trace {
 
     private TraceId id;
     private String endPoint;

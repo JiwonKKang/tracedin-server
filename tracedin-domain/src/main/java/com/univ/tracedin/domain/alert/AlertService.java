@@ -23,17 +23,17 @@ public class AlertService {
     }
 
     public void removeMethod(AlertMethodId alertMethodId) {
-        AlertMethod alertMethod = alertMethodManager.read(alertMethodId);
+        final AlertMethod alertMethod = alertMethodManager.read(alertMethodId);
         alertMethodManager.remove(alertMethod);
     }
 
     public void deactivateMethod(AlertMethodId alertMethodId) {
-        AlertMethod alertMethod = alertMethodManager.read(alertMethodId);
+        final AlertMethod alertMethod = alertMethodManager.read(alertMethodId);
         alertMethodManager.deactivate(alertMethod);
     }
 
     public void activateMethod(AlertMethodId alertMethodId) {
-        AlertMethod alertMethod = alertMethodManager.read(alertMethodId);
+        final AlertMethod alertMethod = alertMethodManager.read(alertMethodId);
         alertMethodManager.activate(alertMethod);
     }
 }

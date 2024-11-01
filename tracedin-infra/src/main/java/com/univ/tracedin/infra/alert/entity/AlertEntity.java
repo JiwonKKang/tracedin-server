@@ -48,8 +48,8 @@ public class AlertEntity {
     private Map<String, String> details;
 
     public static AlertEntity from(Alert alert) {
-        Long alertId = (alert.getId() == null) ? null : alert.getId().getValue();
-        return AlertEntity.builder()
+        final Long alertId = (alert.getId() == null) ? null : alert.getId().getValue();
+        return builder()
                 .id(alertId)
                 .projectId(alert.getReceiver().projectId().getValue())
                 .title(alert.getTitle())

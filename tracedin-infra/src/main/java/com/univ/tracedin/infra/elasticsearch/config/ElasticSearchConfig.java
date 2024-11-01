@@ -25,13 +25,13 @@ public class ElasticSearchConfig extends ElasticsearchConfiguration {
 
     @Override
     public ClientConfiguration clientConfiguration() {
-        return ClientConfiguration.builder().connectedTo(esHost + ":" + esPort).build();
+        return ClientConfiguration.builder().connectedTo(esHost + ':' + esPort).build();
     }
 
     @Bean
     public ElasticsearchClient elasticsearchClient() {
-        RestClient restClient = RestClient.builder(new HttpHost(esHost, esPort)).build();
-        RestClientTransport transport =
+        final RestClient restClient = RestClient.builder(new HttpHost(esHost, esPort)).build();
+        final RestClientTransport transport =
                 new RestClientTransport(restClient, new JacksonJsonpMapper());
         return new ElasticsearchClient(transport);
     }

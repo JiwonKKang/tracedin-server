@@ -1,5 +1,7 @@
 package com.univ.tracedin.domain.global;
 
+import java.util.Objects;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +24,12 @@ public abstract class BaseId<T> {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        BaseId<?> baseId = (BaseId<?>) o;
+        final BaseId<?> baseId = (BaseId<?>) o;
         return value.equals(baseId.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getValue());
     }
 }

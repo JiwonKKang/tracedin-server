@@ -40,7 +40,7 @@ public class UserEntity {
     private UserRole role;
 
     public static UserEntity from(User user) {
-        return UserEntity.builder()
+        return builder()
                 .name(user.getName())
                 .email(user.getEmail())
                 .password(user.getPassword())

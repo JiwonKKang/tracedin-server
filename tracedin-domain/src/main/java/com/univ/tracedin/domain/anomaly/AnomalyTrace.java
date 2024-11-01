@@ -10,7 +10,7 @@ public record AnomalyTrace(TraceId traceId, ProjectKey projectKey, List<SpanId> 
 
     public static AnomalyTrace from(
             TraceId traceId, String projectKey, List<String> anomalySpanIds) {
-        List<SpanId> spanIds = anomalySpanIds.stream().map(SpanId::from).toList();
+        final List<SpanId> spanIds = anomalySpanIds.stream().map(SpanId::from).toList();
         return new AnomalyTrace(traceId, ProjectKey.from(projectKey), spanIds);
     }
 }

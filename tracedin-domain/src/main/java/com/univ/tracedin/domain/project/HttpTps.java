@@ -7,7 +7,7 @@ import java.time.ZoneId;
 public record HttpTps(LocalDateTime timestamp, int httpRequestCount) {
 
     public static HttpTps of(long endEpochMillis, double httpRequestCount) {
-        LocalDateTime timestamp =
+        final LocalDateTime timestamp =
                 LocalDateTime.ofInstant(
                         Instant.ofEpochMilli(endEpochMillis), ZoneId.systemDefault());
         return new HttpTps(timestamp, (int) httpRequestCount);

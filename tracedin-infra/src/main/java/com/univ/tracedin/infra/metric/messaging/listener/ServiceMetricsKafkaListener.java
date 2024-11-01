@@ -33,7 +33,7 @@ public class ServiceMetricsKafkaListener
                 records.stream().map(ConsumerRecord::partition).toList(),
                 records.stream().map(ConsumerRecord::offset).toList());
 
-        List<ServiceMetricsCollectedEvent> events =
+        final List<ServiceMetricsCollectedEvent> events =
                 records.stream().map(ConsumerRecord::value).toList();
         serviceMetricsMessageProcessor.process(events);
     }

@@ -13,7 +13,7 @@ public record SearchResult<T>(List<T> results, Map<String, Object> afterKey, lon
     }
 
     public <R> SearchResult<R> map(Function<T, R> mapper) {
-        List<R> mappedContent = results.stream().map(mapper).collect(Collectors.toList());
+        final List<R> mappedContent = results.stream().map(mapper).collect(Collectors.toList());
         return new SearchResult<>(mappedContent, afterKey, totalCount);
     }
 }

@@ -34,7 +34,7 @@ public class AnomalyTraceKafkaListener implements KafkaConsumer<TraceId, Anomaly
                 records.stream().map(ConsumerRecord::partition).toList(),
                 records.stream().map(ConsumerRecord::offset).toList());
 
-        List<AnomalyTrace> anomalyTraces =
+        final List<AnomalyTrace> anomalyTraces =
                 records.stream()
                         .map(
                                 record ->

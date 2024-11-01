@@ -32,14 +32,14 @@ public class AnomalyTraceProcessor {
 
     private void sendAlerts(List<AnomalyTrace> anomalyTraces) {
         for (AnomalyTrace anomalyTrace : anomalyTraces) {
-            Alert anomalyAlert = createAnomalyAlert(anomalyTrace);
+            final Alert anomalyAlert = createAnomalyAlert(anomalyTrace);
             alertSender.send(anomalyAlert);
         }
     }
 
     private Alert createAnomalyAlert(AnomalyTrace anomalyTrace) {
-        Project project = projectReader.readByKey(anomalyTrace.projectKey());
-        HashMap<String, String> details =
+        final Project project = projectReader.readByKey(anomalyTrace.projectKey());
+        final HashMap<String, String> details =
                 new HashMap<>() {
                     {
                         put("traceId", anomalyTrace.traceId().getValue());
@@ -58,7 +58,7 @@ public class AnomalyTraceProcessor {
         }
     }
 
-    private String getSpanIdToString(AnomalyTrace anomalyTrace) {
+    private static String getSpanIdToString(AnomalyTrace anomalyTrace) {
         return anomalyTrace.anomalySpanIds().stream().map(SpanId::getValue).toList().toString();
     }
 }

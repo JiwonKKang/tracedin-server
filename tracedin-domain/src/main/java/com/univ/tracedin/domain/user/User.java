@@ -10,7 +10,7 @@ import com.univ.tracedin.domain.auth.UserPrincipal;
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class User {
+public final class User {
 
     private UserId id;
 

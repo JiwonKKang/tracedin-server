@@ -37,7 +37,7 @@ public class ServiceMetricsDocument {
     List<Metric> metrics;
 
     public static ServiceMetricsDocument from(ServiceMetrics serviceMetrics) {
-        return ServiceMetricsDocument.builder()
+        return builder()
                 .projectKey(serviceMetrics.getProjectKey().value())
                 .serviceName(serviceMetrics.getServiceName())
                 .metrics(serviceMetrics.getMetrics())

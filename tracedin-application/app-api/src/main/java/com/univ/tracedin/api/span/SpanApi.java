@@ -24,17 +24,19 @@ public class SpanApi implements SpanApiDocs {
 
     private final SpanService spanService;
 
+    @Override
     @GetMapping("/traces")
     public Response<SearchResult<TraceResponse>> searchTraces(
             TraceSearchRequest request, SearchCursor cursor) {
-        SearchResult<TraceResponse> responses =
+        final SearchResult<TraceResponse> responses =
                 spanService.getTraces(request.toCondition(), cursor).map(TraceResponse::from);
         return Response.success(responses);
     }
 
+    @Override
     @GetMapping("/span-tree")
     public Response<SpanTreeResponse> getSpanTreeByTrace(String traceId) {
-        SpanTreeResponse response =
+        final SpanTreeResponse response =
                 SpanTreeResponse.from(spanService.getSpanTree(TraceId.from(traceId)));
         return Response.success(response);
     }

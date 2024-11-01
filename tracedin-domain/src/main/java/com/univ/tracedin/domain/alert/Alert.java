@@ -25,7 +25,7 @@ public class Alert {
     private boolean isRead;
 
     public static Alert create(String title, ProjectId projectId, Map<String, String> details) {
-        return Alert.builder()
+        return builder()
                 .receiver(Receiver.from(projectId))
                 .title(title)
                 .details(details)

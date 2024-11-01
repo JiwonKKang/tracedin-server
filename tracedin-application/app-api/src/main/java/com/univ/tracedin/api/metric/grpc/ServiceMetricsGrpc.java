@@ -48,11 +48,14 @@ public class ServiceMetricsGrpc extends ServiceMetricsGrpcAppenderImplBase {
         return ServiceMetrics.builder()
                 .projectKey(ProjectKey.from(request.getProjectKey()))
                 .serviceName(request.getServiceName())
-                .metrics(request.getMetricsList().stream().map(this::toMetric).toList())
+                .metrics(
+                        request.getMetricsList().stream()
+                                .map(ServiceMetricsGrpc::toMetric)
+                                .toList())
                 .build();
     }
 
-    private Metric toMetric(MetricRequest metricRequest) {
+    private static Metric toMetric(MetricRequest metricRequest) {
         return Metric.builder()
                 .name(metricRequest.getName())
                 .description(metricRequest.getDescription())

@@ -10,7 +10,7 @@ import com.univ.tracedin.domain.project.ProjectId;
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class AlertMethod {
+public final class AlertMethod {
 
     private AlertMethodId id;
     private ProjectId projectId;

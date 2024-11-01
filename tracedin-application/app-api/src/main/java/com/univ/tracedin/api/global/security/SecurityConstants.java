@@ -25,4 +25,6 @@ public class SecurityConstants {
     public static String[] getPermittedURIs() {
         return Stream.of(SWAGGER_URIS, SYSTEM_URIS).flatMap(Stream::of).toArray(String[]::new);
     }
+
+    private SecurityConstants() {}
 }

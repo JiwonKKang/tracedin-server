@@ -19,8 +19,9 @@ public class ServiceMetricsCoreRepository implements ServiceMetricsRepository {
 
     private final ServiceMetricsElasticSearchRepository serviceMetricsElasticSearchRepository;
 
+    @Override
     public void saveAll(List<ServiceMetrics> metrics) {
-        List<ServiceMetricsDocument> documents =
+        final List<ServiceMetricsDocument> documents =
                 metrics.stream().map(ServiceMetricsDocument::from).toList();
         serviceMetricsElasticSearchRepository.saveAll(documents);
     }

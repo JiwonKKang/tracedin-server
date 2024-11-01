@@ -3,7 +3,7 @@ package com.univ.tracedin.infra.span.exception;
 import com.univ.tracedin.common.exception.InfraException;
 import com.univ.tracedin.domain.span.exception.SpanErrorCode;
 
-public class ElasticSearchException extends InfraException {
+public final class ElasticSearchException extends InfraException {
 
     public static final ElasticSearchException EXCEPTION = new ElasticSearchException();
 

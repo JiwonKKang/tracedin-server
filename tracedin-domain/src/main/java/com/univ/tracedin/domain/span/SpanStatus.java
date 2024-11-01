@@ -9,7 +9,7 @@ public enum SpanStatus {
         if (spanStatus == null) {
             return UNSET;
         }
-        for (SpanStatus type : SpanStatus.values()) {
+        for (SpanStatus type : values()) {
             if (type.name().equalsIgnoreCase(spanStatus)) {
                 return type;
             }

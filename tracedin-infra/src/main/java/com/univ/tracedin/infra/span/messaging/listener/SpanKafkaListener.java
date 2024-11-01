@@ -32,7 +32,7 @@ public class SpanKafkaListener implements KafkaConsumer<TraceId, SpanCollectedEv
                 records.stream().map(ConsumerRecord::partition).toList(),
                 records.stream().map(ConsumerRecord::offset).toList());
 
-        List<Span> spans =
+        final List<Span> spans =
                 records.stream()
                         .map(ConsumerRecord::value)
                         .map(SpanCollectedEvent::spans)

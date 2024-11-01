@@ -25,16 +25,18 @@ public class AuthApi implements AuthApiDocs {
 
     private final AuthService authService;
 
+    @Override
     @PostMapping("/sign-up")
     public Response<UserResponse> signup(@RequestBody SignUpRequest request) {
-        User signUpUser = authService.signUp(request.toUserProfile(), request.password());
+        final User signUpUser = authService.signUp(request.toUserProfile(), request.password());
         return Response.success(UserResponse.from(signUpUser));
     }
 
+    @Override
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
-        Tokens tokens = authService.login(request.toLoginInfo());
-        HttpHeaders tokenHeaders = TokenUtils.createTokenHeaders(tokens);
+        final Tokens tokens = authService.login(request.toLoginInfo());
+        final HttpHeaders tokenHeaders = TokenUtils.createTokenHeaders(tokens);
         return ResponseEntity.ok().headers(tokenHeaders).build();
     }
 }

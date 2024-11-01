@@ -26,7 +26,7 @@ public class SpanService {
     }
 
     public SpanTree getSpanTree(TraceId traceId) {
-        List<Span> spans = spanReader.read(traceId);
+        final List<Span> spans = spanReader.read(traceId);
         return SpanTreeBuilder.build(spans);
     }
 }

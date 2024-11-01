@@ -14,7 +14,7 @@ public class ServiceMetricsMessageProcessor {
     private final ServiceMetricsSender serviceMetricsSender;
 
     public void process(List<ServiceMetricsCollectedEvent> messages) {
-        List<ServiceMetrics> metrics =
+        final List<ServiceMetrics> metrics =
                 messages.stream().map(ServiceMetricsCollectedEvent::serviceMetrics).toList();
         metrics.forEach(serviceMetricsSender::send);
         serviceMetricsAppender.appendAll(metrics);

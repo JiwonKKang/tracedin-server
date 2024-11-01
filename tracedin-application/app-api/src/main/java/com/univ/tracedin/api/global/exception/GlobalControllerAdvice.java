@@ -16,7 +16,7 @@ import com.univ.tracedin.common.exception.ErrorReason;
 @RestControllerAdvice
 public class GlobalControllerAdvice {
 
-    @ExceptionHandler(value = CustomException.class)
+    @ExceptionHandler(CustomException.class)
     public ResponseEntity<?> customError(CustomException e, HttpServletRequest request) {
         return ResponseEntity.status(e.getStatus())
                 .body(
@@ -26,7 +26,7 @@ public class GlobalControllerAdvice {
                                 e.getMessage()));
     }
 
-    @ExceptionHandler(value = Exception.class)
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<?> error(Exception e, HttpServletRequest request) {
         log.error("error", e);
         return ResponseEntity.status(500)

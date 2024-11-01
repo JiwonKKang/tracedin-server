@@ -31,7 +31,7 @@ import io.jsonwebtoken.security.Keys;
 public class JwtTokenizer implements TokenGenerator {
 
     public static String generateAccessToken(UserPrincipal principal) {
-        Key key = getKeyFromSecretKey(SECRET_KEY);
+        final Key key = getKeyFromSecretKey(secretKey);
 
         return Jwts.builder()
                 .setSubject(String.valueOf(principal.userId()))
@@ -43,7 +43,7 @@ public class JwtTokenizer implements TokenGenerator {
     }
 
     public static String generateRefreshToken(UserPrincipal principal) {
-        Key key = getKeyFromSecretKey(SECRET_KEY);
+        final Key key = getKeyFromSecretKey(secretKey);
 
         return Jwts.builder()
                 .setSubject(String.valueOf(principal.userId()))
@@ -54,45 +54,45 @@ public class JwtTokenizer implements TokenGenerator {
 
     public static void setInHeader(
             HttpServletResponse response, String accessToken, String refreshToken) {
-        response.setHeader(ACCESS_TOKEN_HEADER, accessToken);
-        response.setHeader(REFRESH_TOKEN_HEADER, refreshToken);
+        response.setHeader(accessTokenHeader, accessToken);
+        response.setHeader(refreshTokenHeader, refreshToken);
     }
 
     public static Key getKeyFromSecretKey(String secretKey) {
-        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        final byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public static Date getTokenExpiration() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.SECOND, ACCESS_TOKEN_EXPIRATION);
+        final Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.SECOND, accessTokenExpiration);
         return calendar.getTime();
     }
 
     public static Optional<String> extractAccessToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(ACCESS_TOKEN_HEADER))
-                .filter(accessToken -> accessToken.startsWith(BEARER))
-                .map(accessToken -> accessToken.replace(BEARER, ""));
+        return Optional.ofNullable(request.getHeader(accessTokenHeader))
+                .filter(accessToken -> accessToken.startsWith(bearer))
+                .map(accessToken -> accessToken.replace(bearer, ""));
     }
 
     public static Optional<String> extractRefreshToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(REFRESH_TOKEN_HEADER))
-                .filter(refreshToken -> refreshToken.startsWith(BEARER))
-                .map(refreshToken -> refreshToken.replace(BEARER, ""));
+        return Optional.ofNullable(request.getHeader(refreshTokenHeader))
+                .filter(refreshToken -> refreshToken.startsWith(bearer))
+                .map(refreshToken -> refreshToken.replace(bearer, ""));
     }
 
     public static UserPrincipal extractPrincipal(String token) {
         try {
             // JWT 파싱 및 유효성 검사
-            Claims claims =
+            final Claims claims =
                     Jwts.parserBuilder()
-                            .setSigningKey(getKeyFromSecretKey(SECRET_KEY))
+                            .setSigningKey(getKeyFromSecretKey(secretKey))
                             .build()
                             .parseClaimsJws(token)
                             .getBody();
 
-            long userId = Long.parseLong(claims.getSubject());
-            UserRole role = UserRole.valueOf(claims.get("role", String.class));
+            final long userId = Long.parseLong(claims.getSubject());
+            final UserRole role = UserRole.valueOf(claims.get("role", String.class));
             return UserPrincipal.of(UserId.from(userId), role);
 
         } catch (ExpiredJwtException e) {

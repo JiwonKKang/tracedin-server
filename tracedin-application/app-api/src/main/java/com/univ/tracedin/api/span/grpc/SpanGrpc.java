@@ -36,7 +36,7 @@ public class SpanGrpc extends SpanGrpcAppenderImplBase {
     public void appendSpans(
             AppendSpansRequest request, StreamObserver<AppendSpanResponse> responseObserver) {
         try {
-            spanService.appendSpans(request.getSpansList().stream().map(this::toSpan).toList());
+            spanService.appendSpans(request.getSpansList().stream().map(SpanGrpc::toSpan).toList());
             responseObserver.onNext(AppendSpanResponse.newBuilder().setStatusCode(200).build());
         } catch (Exception e) {
             log.error("Failed to append spans", e);
@@ -46,7 +46,7 @@ public class SpanGrpc extends SpanGrpcAppenderImplBase {
         }
     }
 
-    private Span toSpan(SpanProto.Span span) {
+    private static Span toSpan(SpanProto.Span span) {
         return Span.builder()
                 .id(SpanId.from(span.getSpanId()))
                 .traceId(TraceId.from(span.getTraceId()))
@@ -92,7 +92,7 @@ public class SpanGrpc extends SpanGrpcAppenderImplBase {
                 .build();
     }
 
-    private long nanosToMillis(long nanos) {
+    private static long nanosToMillis(long nanos) {
         return nanos / 1_000_000;
     }
 }

@@ -68,7 +68,7 @@ public class ProjectRepositoryAdapter implements ProjectRepository {
 
     @Override
     public List<Node> findServiceNodeList(ProjectKey projectKey) {
-        List<String> serviceNames =
+        final List<String> serviceNames =
                 spanElasticSearchRepository.findServiceNames(projectKey.value());
         return serviceNames.stream()
                 .map(name -> Node.of(projectKey, name, NodeType.SERVICE))

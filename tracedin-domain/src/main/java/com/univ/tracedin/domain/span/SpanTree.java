@@ -11,13 +11,13 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SpanTree {
+public final class SpanTree {
 
     private Span span;
     private List<SpanTree> children;
 
     public static SpanTree init(Span span) {
-        return SpanTree.builder().span(span).children(new ArrayList<>()).build();
+        return builder().span(span).children(new ArrayList<>()).build();
     }
 
     public SpanId getParentId() {

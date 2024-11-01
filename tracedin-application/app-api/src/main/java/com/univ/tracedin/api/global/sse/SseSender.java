@@ -14,7 +14,7 @@ import com.univ.tracedin.domain.metric.ServiceMetrics;
 @RequiredArgsConstructor
 public class SseSender implements EventSender {
 
-    private final String METRICS_POSTFIX = " - metrics";
+    private static final String METRICS_POSTFIX = " - metrics";
     private final SseEmitterRepository sseEmitterRepository;
 
     @Override

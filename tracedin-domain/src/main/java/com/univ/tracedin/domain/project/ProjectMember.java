@@ -20,7 +20,7 @@ public class ProjectMember {
     private MemberRole role;
 
     public static ProjectMember create(ProjectId projectId, UserId memberId, MemberRole role) {
-        return ProjectMember.builder().projectId(projectId).memberId(memberId).role(role).build();
+        return builder().projectId(projectId).memberId(memberId).role(role).build();
     }
 
     public void changeRole(MemberRole role) {

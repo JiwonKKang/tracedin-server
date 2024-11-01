@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class SpanTreeBuilder {
+public final class SpanTreeBuilder {
 
     public static SpanTree build(List<Span> spans) {
-        Map<SpanId, SpanTree> spanMap =
+        final Map<SpanId, SpanTree> spanMap =
                 spans.stream().collect(Collectors.toMap(Span::getId, SpanTree::init));
 
         spanMap.values().stream()
@@ -16,7 +16,7 @@ public class SpanTreeBuilder {
                 .forEach(
                         current -> {
                             if (current.getSpan().hasParent()) {
-                                SpanTree parent = spanMap.get(current.getParentId());
+                                final SpanTree parent = spanMap.get(current.getParentId());
                                 parent.addChild(current);
                             }
                         });
@@ -26,4 +26,6 @@ public class SpanTreeBuilder {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("No root span found"));
     }
+
+    private SpanTreeBuilder() {}
 }

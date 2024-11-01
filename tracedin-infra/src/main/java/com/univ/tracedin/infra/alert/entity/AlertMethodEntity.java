@@ -41,8 +41,9 @@ public class AlertMethodEntity {
     private boolean isActivated;
 
     public static AlertMethodEntity from(AlertMethod alertMethod) {
-        Long alertMethodId = (alertMethod.getId() == null) ? null : alertMethod.getId().getValue();
-        return AlertMethodEntity.builder()
+        final Long alertMethodId =
+                (alertMethod.getId() == null) ? null : alertMethod.getId().getValue();
+        return builder()
                 .id(alertMethodId)
                 .projectId(alertMethod.getProjectId().getValue())
                 .alertType(alertMethod.getAlertType())

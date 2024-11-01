@@ -20,9 +20,10 @@ public class ServiceMetricsApi implements ServiceMetricsApiDocs {
 
     private final SseConnector<Node> sseConnector;
 
+    @Override
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> subscribe(String projectKey, String serviceName) {
-        SseEmitter emitter =
+        final SseEmitter emitter =
                 sseConnector.connect(Node.createService(ProjectKey.from(projectKey), serviceName));
         return ResponseEntity.ok(emitter);
     }

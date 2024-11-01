@@ -40,7 +40,7 @@ public class ProjectMemberEntity {
     private MemberRole role;
 
     public static ProjectMemberEntity from(ProjectMember projectMember) {
-        return ProjectMemberEntity.builder()
+        return builder()
                 .projectId(projectMember.getProjectId().getValue())
                 .memberId(projectMember.getMemberId().getValue())
                 .role(projectMember.getRole())

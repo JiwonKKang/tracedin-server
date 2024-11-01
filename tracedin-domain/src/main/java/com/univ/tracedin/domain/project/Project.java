@@ -19,9 +19,6 @@ public class Project {
     private ProjectKey projectKey;
 
     public static Project create(ProjectInfo projectInfo) {
-        return Project.builder()
-                .info(projectInfo)
-                .projectKey(ProjectKey.create(projectInfo))
-                .build();
+        return builder().info(projectInfo).projectKey(ProjectKey.create(projectInfo)).build();
     }
 }

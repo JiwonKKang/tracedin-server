@@ -24,7 +24,7 @@ public class ServiceMetricsRedisListener implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         try {
-            ServiceMetrics serviceMetrics =
+            final ServiceMetrics serviceMetrics =
                     objectMapper.readValue(message.getBody(), ServiceMetrics.class);
             log.info("Service metrics received: {}", serviceMetrics);
             eventSender.send(serviceMetrics);

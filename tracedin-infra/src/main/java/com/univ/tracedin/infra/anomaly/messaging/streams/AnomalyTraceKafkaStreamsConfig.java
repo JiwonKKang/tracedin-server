@@ -22,7 +22,7 @@ public class AnomalyTraceKafkaStreamsConfig {
 
     @Bean
     public KStream<TraceId, SpanCollectedEvent> spanStreams(StreamsBuilder streamsBuilder) {
-        KStream<TraceId, SpanCollectedEvent> stream = streamsBuilder.stream(inputTopic);
+        final KStream<TraceId, SpanCollectedEvent> stream = streamsBuilder.stream(inputTopic);
         spanStreamProcessor.process(stream);
         return stream;
     }

@@ -17,7 +17,7 @@ public class SseConnector<T> {
     private final SseEmitterRepository sseEmitterRepository;
 
     public SseEmitter connect(T key) {
-        SseEmitter emitter = new SseEmitter(TIMEOUT);
+        final SseEmitter emitter = new SseEmitter(TIMEOUT);
         sseEmitterRepository.save(key, emitter);
         emitter.onTimeout(() -> sseEmitterRepository.remove(key));
         emitter.onCompletion(() -> sseEmitterRepository.remove(key));

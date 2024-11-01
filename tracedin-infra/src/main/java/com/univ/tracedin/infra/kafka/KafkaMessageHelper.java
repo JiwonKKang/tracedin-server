@@ -5,12 +5,9 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.kafka.support.SendResult;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public final class KafkaMessageHelper {
 
     public static <K, V> CompletableFuture<SendResult<K, V>> getKafkaCallback(V payload) {
@@ -34,4 +31,6 @@ public final class KafkaMessageHelper {
             }
         };
     }
+
+    private KafkaMessageHelper() {}
 }

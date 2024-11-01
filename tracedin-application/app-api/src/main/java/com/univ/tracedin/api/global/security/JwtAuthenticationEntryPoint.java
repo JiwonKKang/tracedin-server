@@ -36,7 +36,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                 com.univ.tracedin.api.auth.exception.AuthenticationException.EXCEPTION);
     }
 
-    private boolean isExceptionInSecurityFilter(HttpServletRequest request) {
+    private static boolean isExceptionInSecurityFilter(HttpServletRequest request) {
         return request.getAttribute("exception") != null;
     }
 }

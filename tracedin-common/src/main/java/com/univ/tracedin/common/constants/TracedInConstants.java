@@ -1,6 +1,6 @@
 package com.univ.tracedin.common.constants;
 
-public class TracedInConstants {
+public final class TracedInConstants {
 
     public static final int BAD_REQUEST = 400;
     public static final int UNAUTHORIZED = 401;
@@ -10,4 +10,6 @@ public class TracedInConstants {
     public static final int INTERNAL_SERVER = 500;
 
     public static final String BEARER = "Bearer ";
+
+    private TracedInConstants() {}
 }

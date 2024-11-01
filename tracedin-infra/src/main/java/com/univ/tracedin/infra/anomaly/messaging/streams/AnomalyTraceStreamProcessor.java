@@ -39,25 +39,25 @@ public class AnomalyTraceStreamProcessor {
     private final AnomalyDetectionClient anomalyDetectionClient;
 
     void process(KStream<TraceId, SpanCollectedEvent> stream) {
-        JsonSerde<List<Span>> listOfSpanSerde = new JsonSerde<>(new TypeReference<>() {});
+        final JsonSerde<List<Span>> listOfSpanSerde = new JsonSerde<>(new TypeReference<>() {});
 
         // Stream processor - SpanCollectedEvent를 받아서 TraceId로 그루핑한뒤 각 TraceId에 대한 Span들을 List로 묶어서
-        KStream<TraceId, Span> spanStream =
+        final KStream<TraceId, Span> spanStream =
                 stream.flatMap(
                         (key, value) -> {
-                            List<KeyValue<TraceId, Span>> result = new ArrayList<>();
+                            final List<KeyValue<TraceId, Span>> result = new ArrayList<>();
                             for (Span span : value.spans()) {
-                                TraceId traceId = span.getTraceId();
+                                final TraceId traceId = span.getTraceId();
                                 result.add(new KeyValue<>(traceId, span));
                             }
                             return result;
                         });
 
-        TimeWindows timeWindows =
+        final TimeWindows timeWindows =
                 TimeWindows.ofSizeAndGrace(Duration.ofMinutes(1), Duration.ofSeconds(30));
 
         // KTable로 만듦
-        KTable<Windowed<TraceId>, List<Span>> traceTable =
+        final KTable<Windowed<TraceId>, List<Span>> traceTable =
                 spanStream
                         .groupByKey()
                         .windowedBy(timeWindows)
@@ -79,8 +79,8 @@ public class AnomalyTraceStreamProcessor {
                 .to(anomalyTraceTopic, Produced.keySerde(getTraceIdSerde()));
     }
 
-    private Serde<TraceId> getTraceIdSerde() {
-        JsonSerde<TraceId> traceIdSerde = new JsonSerde<>(TraceId.class);
+    private static Serde<TraceId> getTraceIdSerde() {
+        final JsonSerde<TraceId> traceIdSerde = new JsonSerde<>(TraceId.class);
         traceIdSerde.configure(Map.of(), true);
         return traceIdSerde;
     }

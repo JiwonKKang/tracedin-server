@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.univ.tracedin.infra.span.exception.ElasticSearchException;
 
 @Slf4j
-public class ESUtils {
+public final class ESUtils {
 
     public static <T> T executeESQuery(ESSupplier<T> request) {
         try {
@@ -17,4 +17,6 @@ public class ESUtils {
             throw ElasticSearchException.EXCEPTION;
         }
     }
+
+    private ESUtils() {}
 }

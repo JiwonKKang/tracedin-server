@@ -17,7 +17,7 @@ public class TokenRedisConfig {
 
     @Bean
     public RedisTemplate<String, RefreshToken> tokenRedisTemplate() {
-        RedisTemplate<String, RefreshToken> template = new RedisTemplate<>();
+        final RedisTemplate<String, RefreshToken> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         return template;
     }

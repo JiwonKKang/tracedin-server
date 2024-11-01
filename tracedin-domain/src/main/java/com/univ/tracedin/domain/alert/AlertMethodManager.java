@@ -15,7 +15,7 @@ public class AlertMethodManager {
     private final AlertMethodRepository alertMethodRepository;
 
     public void append(AlertInfo alertInfo) {
-        AlertMethod alertMethod = AlertMethod.create(alertInfo);
+        final AlertMethod alertMethod = AlertMethod.create(alertInfo);
         alertMethodRepository.saveMethod(alertMethod);
     }
 

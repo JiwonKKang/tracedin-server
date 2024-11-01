@@ -8,24 +8,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class SecurityProperties {
 
-    public static String SECRET_KEY;
-    public static int ACCESS_TOKEN_EXPIRATION;
-    public static String ACCESS_TOKEN_HEADER = AUTHORIZATION;
-    public static String REFRESH_TOKEN_HEADER;
-    public static String BEARER = "Bearer ";
+    public static String secretKey;
+    public static int accessTokenExpiration;
+    public static String accessTokenHeader = AUTHORIZATION;
+    public static String refreshTokenHeader;
+    public static String bearer = "Bearer ";
 
     @Value("${jwt.secret-key}")
     public void setSecretKey(String secretKey) {
-        SecurityProperties.SECRET_KEY = secretKey;
+        SecurityProperties.secretKey = secretKey;
     }
 
     @Value("${jwt.access-token.expiration}")
     public void setAccessTokenExpiration(int accessTokenExpiration) {
-        SecurityProperties.ACCESS_TOKEN_EXPIRATION = accessTokenExpiration;
+        SecurityProperties.accessTokenExpiration = accessTokenExpiration;
     }
 
     @Value("${jwt.refresh-token.header}")
     public void setRefreshToken(String refreshToken) {
-        SecurityProperties.REFRESH_TOKEN_HEADER = refreshToken;
+        SecurityProperties.refreshTokenHeader = refreshToken;
     }
 }
