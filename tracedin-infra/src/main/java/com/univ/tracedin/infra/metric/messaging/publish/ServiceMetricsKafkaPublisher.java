@@ -17,7 +17,6 @@ import com.univ.tracedin.infra.kafka.KafkaProducer;
 public class ServiceMetricsKafkaPublisher implements ServiceMetricsMessagePublisher {
 
     private final KafkaProducer<String, ServiceMetricsCollectedEvent> kafkaProducer;
-    private final KafkaMessageHelper kafkaMessageHelper;
 
     @Value("${kafka.topic.service-metrics}")
     private String serviceMetricsTopic;
@@ -27,6 +26,6 @@ public class ServiceMetricsKafkaPublisher implements ServiceMetricsMessagePublis
                 serviceMetricsTopic,
                 serviceMetricsCollectedEvent.getKey(),
                 serviceMetricsCollectedEvent,
-                kafkaMessageHelper.getKafkaCallback(serviceMetricsCollectedEvent));
+                KafkaMessageHelper.getKafkaCallback(serviceMetricsCollectedEvent));
     }
 }

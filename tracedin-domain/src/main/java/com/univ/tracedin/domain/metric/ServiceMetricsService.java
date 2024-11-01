@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ServiceMetricsService {
 
-    private final ServiceMetricsReader serviceMetricReader;
     private final ServiceMetricsMessagePublisher serviceMetricsMessagePublisher;
 
     public void appendMetrics(ServiceMetrics metrics) {

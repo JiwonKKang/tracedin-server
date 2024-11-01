@@ -3,14 +3,21 @@ package com.univ.tracedin.domain.project;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
 import io.micrometer.common.util.StringUtils;
 
-public record TraceSearchCondition(
-        ProjectKey projectKey,
-        String serviceName,
-        String endPointUrl,
-        LocalDateTime startTime,
-        LocalDateTime endTime) {
+@Getter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class TraceSearchCondition extends ServiceSearchCondition {
+    private EndPointUrl endPointUrl;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
     public long getEpochMillisStartTime() {
         return startTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
@@ -20,15 +27,11 @@ public record TraceSearchCondition(
         return endTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
-    public boolean hasServiceName() {
-        return StringUtils.isNotBlank(serviceName);
-    }
-
     public boolean hasTimeRange() {
         return startTime != null && endTime != null;
     }
 
     public boolean hasEndPointUrl() {
-        return StringUtils.isNotBlank(endPointUrl);
+        return StringUtils.isNotBlank(endPointUrl.value());
     }
 }

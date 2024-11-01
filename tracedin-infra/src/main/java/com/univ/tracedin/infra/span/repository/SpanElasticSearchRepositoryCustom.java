@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.univ.tracedin.common.dto.SearchResult;
+import com.univ.tracedin.domain.project.EndPointUrl;
 import com.univ.tracedin.domain.project.HttpTps;
+import com.univ.tracedin.domain.project.ServiceSearchCondition;
 import com.univ.tracedin.domain.project.StatusCodeDistribution.StatusCodeBucket;
 import com.univ.tracedin.domain.project.TraceHipMap.EndTimeBucket;
 import com.univ.tracedin.domain.project.TraceSearchCondition;
@@ -29,4 +31,6 @@ public interface SpanElasticSearchRepositoryCustom {
     List<StatusCodeBucket> getStatusCodeDistribution(TraceSearchCondition cond);
 
     List<HttpTps> getHttpTps(TraceSearchCondition cond);
+
+    List<EndPointUrl> getEndpointUrls(ServiceSearchCondition cond);
 }

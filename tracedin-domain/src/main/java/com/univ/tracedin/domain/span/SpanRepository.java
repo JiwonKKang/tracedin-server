@@ -4,8 +4,10 @@ import java.util.List;
 
 import com.univ.tracedin.common.dto.SearchCursor;
 import com.univ.tracedin.common.dto.SearchResult;
+import com.univ.tracedin.domain.project.EndPointUrl;
 import com.univ.tracedin.domain.project.HttpTps;
 import com.univ.tracedin.domain.project.ProjectKey;
+import com.univ.tracedin.domain.project.ServiceSearchCondition;
 import com.univ.tracedin.domain.project.StatusCodeDistribution;
 import com.univ.tracedin.domain.project.TraceHipMap;
 import com.univ.tracedin.domain.project.TraceSearchCondition;
@@ -30,4 +32,6 @@ public interface SpanRepository {
     StatusCodeDistribution getStatusCodeDistribution(TraceSearchCondition cond);
 
     List<HttpTps> getHttpTps(TraceSearchCondition cond);
+
+    List<EndPointUrl> getEndpoints(ServiceSearchCondition cond);
 }

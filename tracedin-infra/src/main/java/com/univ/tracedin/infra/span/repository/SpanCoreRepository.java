@@ -9,8 +9,10 @@ import lombok.RequiredArgsConstructor;
 
 import com.univ.tracedin.common.dto.SearchCursor;
 import com.univ.tracedin.common.dto.SearchResult;
+import com.univ.tracedin.domain.project.EndPointUrl;
 import com.univ.tracedin.domain.project.HttpTps;
 import com.univ.tracedin.domain.project.ProjectKey;
+import com.univ.tracedin.domain.project.ServiceSearchCondition;
 import com.univ.tracedin.domain.project.StatusCodeDistribution;
 import com.univ.tracedin.domain.project.StatusCodeDistribution.StatusCodeBucket;
 import com.univ.tracedin.domain.project.TraceHipMap;
@@ -73,14 +75,14 @@ public class SpanCoreRepository implements SpanRepository {
 
     @Override
     public TraceHipMap getTraceHitMap(TraceSearchCondition cond) {
-        List<EndTimeBucket> traceHitMapByProjectKey =
+        final List<EndTimeBucket> traceHitMapByProjectKey =
                 spanElasticSearchRepository.getTraceHitMapByProjectKey(cond);
         return TraceHipMap.from(traceHitMapByProjectKey);
     }
 
     @Override
     public StatusCodeDistribution getStatusCodeDistribution(TraceSearchCondition cond) {
-        List<StatusCodeBucket> statusCodeDistribution =
+        final List<StatusCodeBucket> statusCodeDistribution =
                 spanElasticSearchRepository.getStatusCodeDistribution(cond);
 
         return StatusCodeDistribution.from(statusCodeDistribution);
@@ -89,5 +91,10 @@ public class SpanCoreRepository implements SpanRepository {
     @Override
     public List<HttpTps> getHttpTps(TraceSearchCondition cond) {
         return spanElasticSearchRepository.getHttpTps(cond);
+    }
+
+    @Override
+    public List<EndPointUrl> getEndpoints(ServiceSearchCondition cond) {
+        return spanElasticSearchRepository.getEndpointUrls(cond);
     }
 }

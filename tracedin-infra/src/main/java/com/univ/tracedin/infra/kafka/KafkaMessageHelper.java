@@ -4,19 +4,20 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.stereotype.Component;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Component
 @Slf4j
-public class KafkaMessageHelper {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public final class KafkaMessageHelper {
 
-    public <K, V> CompletableFuture<SendResult<K, V>> getKafkaCallback(V payload) {
+    public static <K, V> CompletableFuture<SendResult<K, V>> getKafkaCallback(V payload) {
         return new CompletableFuture<>() {
             @Override
             public boolean complete(SendResult<K, V> value) {
-                RecordMetadata metadata = value.getRecordMetadata();
+                final RecordMetadata metadata = value.getRecordMetadata();
                 log.info(
                         "Kafka message sent successfully: Topic: {} Partition: {} Offset: {} Timestamp: {}",
                         metadata.topic(),

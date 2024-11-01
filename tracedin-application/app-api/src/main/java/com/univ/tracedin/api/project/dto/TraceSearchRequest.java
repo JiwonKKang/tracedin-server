@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 
+import com.univ.tracedin.domain.project.EndPointUrl;
 import com.univ.tracedin.domain.project.ProjectKey;
 import com.univ.tracedin.domain.project.TraceSearchCondition;
 
@@ -18,8 +19,13 @@ public record TraceSearchRequest(
         LocalDateTime endTime) {
 
     public TraceSearchCondition toCondition() {
-        return new TraceSearchCondition(
-                new ProjectKey(projectKey), serviceName, endPointUrl, startTime, endTime);
+        return TraceSearchCondition.builder()
+                .projectKey(ProjectKey.from(projectKey))
+                .serviceName(serviceName)
+                .endPointUrl(EndPointUrl.from(endPointUrl))
+                .startTime(startTime)
+                .endTime(endTime)
+                .build();
     }
 
     // 종료 시간만 있을 수 없도록 검증

@@ -18,7 +18,6 @@ import com.univ.tracedin.infra.kafka.KafkaProducer;
 public class SpanKafkaEventPublisher implements SpanMessagePublisher {
 
     private final KafkaProducer<TraceId, SpanCollectedEvent> kafkaProducer;
-    private final KafkaMessageHelper kafkaMessageHelper;
 
     @Value("${kafka.topic.span}")
     private String spanTopic;
@@ -26,6 +25,6 @@ public class SpanKafkaEventPublisher implements SpanMessagePublisher {
     @Override
     public void publish(SpanCollectedEvent event) {
         kafkaProducer.send(
-                spanTopic, event.getKey(), event, kafkaMessageHelper.getKafkaCallback(event));
+                spanTopic, event.getKey(), event, KafkaMessageHelper.getKafkaCallback(event));
     }
 }

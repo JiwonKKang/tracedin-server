@@ -7,20 +7,18 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import com.univ.tracedin.domain.span.Topology;
+
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class NetworkTopology {
+@AllArgsConstructor
+public final class NetworkTopology implements Topology {
 
     private final List<Node> nodes;
     private final List<Edge> edges;
 
-    public static NetworkTopology of(List<Node> nodes, List<Edge> edges) {
-        return new NetworkTopology(nodes, edges);
-    }
-
     @Getter
     @AllArgsConstructor
-    public static class Node {
+    public static final class Node {
 
         private ProjectKey projectKey;
         private String name;
@@ -62,7 +60,7 @@ public class NetworkTopology {
 
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class Edge {
+    public static final class Edge {
 
         private String source;
         private String target;

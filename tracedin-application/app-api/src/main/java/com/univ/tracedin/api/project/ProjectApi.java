@@ -18,8 +18,9 @@ import com.univ.tracedin.api.project.dto.AddMemberRequest;
 import com.univ.tracedin.api.project.dto.CreateProjectRequest;
 import com.univ.tracedin.api.project.dto.NodeResponse;
 import com.univ.tracedin.api.project.dto.ProjectResponse;
+import com.univ.tracedin.api.project.dto.ServiceSearchRequest;
 import com.univ.tracedin.api.project.dto.TraceSearchRequest;
-import com.univ.tracedin.domain.project.NetworkTopology;
+import com.univ.tracedin.domain.project.EndPointUrl;
 import com.univ.tracedin.domain.project.ProjectId;
 import com.univ.tracedin.domain.project.ProjectKey;
 import com.univ.tracedin.domain.project.ProjectMember.MemberRole;
@@ -27,6 +28,7 @@ import com.univ.tracedin.domain.project.ProjectMemberId;
 import com.univ.tracedin.domain.project.ProjectService;
 import com.univ.tracedin.domain.project.ProjectStatistic;
 import com.univ.tracedin.domain.project.ProjectStatistic.StatisticsType;
+import com.univ.tracedin.domain.span.Topology;
 import com.univ.tracedin.domain.user.UserId;
 
 @RestController
@@ -36,6 +38,7 @@ public class ProjectApi implements ProjectApiDocs {
 
     private final ProjectService projectService;
 
+    @Override
     @PostMapping
     public Response<ProjectKey> createProject(
             @RequestBody CreateProjectRequest request, Long userId) {
@@ -43,35 +46,50 @@ public class ProjectApi implements ProjectApiDocs {
                 projectService.create(UserId.from(userId), request.toProjectInfo()));
     }
 
+    @Override
     @GetMapping
     public Response<List<ProjectResponse>> projectList(Long userId) {
-        List<ProjectResponse> responses =
+        final List<ProjectResponse> responses =
                 projectService.getProjectList(UserId.from(userId)).stream()
                         .map(ProjectResponse::from)
                         .toList();
         return Response.success(responses);
     }
 
+    @Override
     @DeleteMapping("/{projectId}")
     public Response<Void> deleteProject(@PathVariable Long projectId) {
         projectService.deleteProject(ProjectId.from(projectId));
         return Response.success();
     }
 
+    @Override
     @GetMapping("/{projectKey}/service-nodes")
     public Response<List<NodeResponse>> serviceNodes(@PathVariable String projectKey) {
-        List<NodeResponse> responses =
+        final List<NodeResponse> responses =
                 projectService.getServiceNodeList(ProjectKey.from(projectKey)).stream()
                         .map(NodeResponse::from)
                         .toList();
         return Response.success(responses);
     }
 
+    @Override
+    @GetMapping("/service-endpoints")
+    public Response<List<String>> serviceEndpoints(ServiceSearchRequest request) {
+        final List<String> response =
+                projectService.getServiceEndpoints(request.toCondition()).stream()
+                        .map(EndPointUrl::value)
+                        .toList();
+        return Response.success(response);
+    }
+
+    @Override
     @GetMapping("/{projectKey}/network-topology")
-    public Response<NetworkTopology> networkTopology(@PathVariable String projectKey) {
+    public Response<Topology> networkTopology(@PathVariable String projectKey) {
         return Response.success(projectService.getNetworkTopology(ProjectKey.from(projectKey)));
     }
 
+    @Override
     @GetMapping("/statistics/{statisticsType}")
     public Response<ProjectStatistic<?>> statistics(
             @PathVariable StatisticsType statisticsType, TraceSearchRequest request) {
@@ -79,6 +97,7 @@ public class ProjectApi implements ProjectApiDocs {
                 projectService.getStatistics(request.toCondition(), statisticsType));
     }
 
+    @Override
     @PostMapping("/{projectId}/members")
     public Response<Void> addMember(@PathVariable Long projectId, AddMemberRequest request) {
         projectService.addMember(
@@ -86,12 +105,14 @@ public class ProjectApi implements ProjectApiDocs {
         return Response.success();
     }
 
+    @Override
     @DeleteMapping("/members/{projectMemberId}")
     public Response<Void> removeMember(@PathVariable Long projectMemberId) {
         projectService.removeMember(ProjectMemberId.from(projectMemberId));
         return Response.success();
     }
 
+    @Override
     @PatchMapping("/members/{projectMemberId}")
     public Response<Void> changeRole(@PathVariable Long projectMemberId, MemberRole targetRole) {
         projectService.changeRole(ProjectMemberId.from(projectMemberId), targetRole);

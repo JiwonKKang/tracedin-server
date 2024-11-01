@@ -14,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.univ.tracedin.common.dto.SearchResult;
+import com.univ.tracedin.domain.project.EndPointUrl;
 import com.univ.tracedin.domain.project.HttpTps;
+import com.univ.tracedin.domain.project.ServiceSearchCondition;
 import com.univ.tracedin.domain.project.StatusCodeDistribution.StatusCodeBucket;
 import com.univ.tracedin.domain.project.TraceHipMap.EndTimeBucket;
 import com.univ.tracedin.domain.project.TraceHipMap.ResponseTimeBucket;
@@ -52,14 +54,14 @@ import co.elastic.clients.json.JsonData;
 @RequiredArgsConstructor
 public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchRepositoryCustom {
 
-    private final String INDEX_NAME = "span";
-    private final String SERVICE_AGGREGATION_KEY = "service_nodes";
+    private static final String INDEX_NAME = "span";
+    private static final String SERVICE_AGGREGATION_KEY = "service_nodes";
 
     private final ElasticsearchClient client;
 
     @Override
     public List<SpanDocument> search(String projectKey, SpanType spanType, SpanKind spanKind) {
-        Query spanQuery = createSpanQuery(projectKey, spanType, spanKind);
+        final Query spanQuery = createSpanQuery(projectKey, spanType, spanKind);
 
         return executeESQuery(
                 () ->
@@ -78,7 +80,7 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
     public List<String> findServiceNames(String projectKey) {
         return executeESQuery(
                 () -> {
-                    SearchResponse<Void> response =
+                    final SearchResponse<Void> response =
                             client.search(
                                     s ->
                                             s.index(INDEX_NAME)
@@ -112,12 +114,12 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
             TraceSearchCondition cond, int size, Map<String, Object> afterKey) {
         return executeESQuery(
                 () -> {
-                    SearchResponse<Void> response =
+                    final SearchResponse<Void> response =
                             client.search(
                                     s ->
                                             s.index(INDEX_NAME)
                                                     .size(0)
-                                                    .query(createServiceSpanQuery(cond))
+                                                    .query(createSearchQuery(cond))
                                                     .aggregations(
                                                             "by_trace",
                                                             createTraceAggregation(size, afterKey))
@@ -131,23 +133,23 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                                                                                                     "traceId")))),
                                     Void.class);
 
-                    CompositeAggregate spansByTrace =
+                    final CompositeAggregate spansByTrace =
                             response.aggregations().get("by_trace").composite();
-                    List<Trace> traces = extractTraces(spansByTrace);
-                    long traceCount =
+                    final List<Trace> traces = extractTraces(spansByTrace);
+                    final long traceCount =
                             response.aggregations().get("trace_count").cardinality().value();
-                    Map<String, Object> nextAfterKey = toObjectMap(spansByTrace.afterKey());
+                    final Map<String, Object> nextAfterKey = toObjectMap(spansByTrace.afterKey());
                     return SearchResult.success(traces, nextAfterKey, traceCount);
                 });
     }
 
     @Override
     public List<SpanDocument> findByTraceId(String traceId) {
-        Query query = QueryBuilders.term(t -> t.field("traceId").value(traceId));
+        final Query query = QueryBuilders.term(t -> t.field("traceId").value(traceId));
 
         return executeESQuery(
                 () -> {
-                    SearchResponse<SpanDocument> response =
+                    final SearchResponse<SpanDocument> response =
                             client.search(
                                     s -> s.index(INDEX_NAME).size(100).query(query),
                                     SpanDocument.class);
@@ -160,12 +162,12 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
     public List<EndTimeBucket> getTraceHitMapByProjectKey(TraceSearchCondition cond) {
         return executeESQuery(
                 () -> {
-                    SearchResponse<Void> response =
+                    final SearchResponse<Void> response =
                             client.search(
                                     s ->
                                             s.index(INDEX_NAME)
                                                     .size(0)
-                                                    .query(createServiceSpanQuery(cond))
+                                                    .query(createSearchQuery(cond))
                                                     .aggregations(
                                                             "by_end_time", histogramAggregation()),
                                     Void.class);
@@ -178,12 +180,12 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
     public List<StatusCodeBucket> getStatusCodeDistribution(TraceSearchCondition cond) {
         return executeESQuery(
                 () -> {
-                    SearchResponse<Void> response =
+                    final SearchResponse<Void> response =
                             client.search(
                                     s ->
                                             s.index(INDEX_NAME)
                                                     .size(0)
-                                                    .query(createServiceSpanQuery(cond))
+                                                    .query(createSearchQuery(cond))
                                                     .aggregations(
                                                             "nested_attributes",
                                                             statusCodeDistributionAggregation()),
@@ -196,12 +198,12 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
     public List<HttpTps> getHttpTps(TraceSearchCondition cond) {
         return executeESQuery(
                 () -> {
-                    SearchResponse<Void> response =
+                    final SearchResponse<Void> response =
                             client.search(
                                     s ->
                                             s.index(INDEX_NAME)
                                                     .size(0)
-                                                    .query(createServiceSpanQuery(cond))
+                                                    .query(createSearchQuery(cond))
                                                     .aggregations("http_tps", httpTpsHistogram()),
                                     Void.class);
 
@@ -209,7 +211,58 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                 });
     }
 
-    private Aggregation httpTpsHistogram() {
+    @Override
+    public List<EndPointUrl> getEndpointUrls(ServiceSearchCondition cond) {
+        return executeESQuery(
+                () -> {
+                    final SearchResponse<Void> response =
+                            client.search(
+                                    s ->
+                                            s.index(INDEX_NAME)
+                                                    .size(0)
+                                                    .query(createSearchQuery(cond))
+                                                    .aggregations(
+                                                            "nested_attributes",
+                                                            endpointsAggregation()),
+                                    Void.class);
+
+                    return parseEndpointUrls(response);
+                });
+    }
+
+    private static List<EndPointUrl> parseEndpointUrls(SearchResponse<Void> response) {
+        return response
+                .aggregations()
+                .get("nested_attributes")
+                .nested()
+                .aggregations()
+                .get("http_url_agg")
+                .sterms()
+                .buckets()
+                .array()
+                .stream()
+                .map(bucket -> EndPointUrl.from(bucket.key().stringValue()))
+                .toList();
+    }
+
+    private static Aggregation endpointsAggregation() {
+        return Aggregation.of(
+                a ->
+                        a.nested(n -> n.path("attributes"))
+                                .aggregations(
+                                        Map.of(
+                                                "http_url_agg",
+                                                Aggregation.of(
+                                                        agg ->
+                                                                agg.terms(
+                                                                        t ->
+                                                                                t.field(
+                                                                                                "attributes.data.http.url.keyword")
+                                                                                        .size(
+                                                                                                100))))));
+    }
+
+    private static Aggregation httpTpsHistogram() {
         return Aggregation.of(
                 agg ->
                         agg.dateHistogram(
@@ -242,8 +295,8 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                                                                                                                                                 "params.count / 600"))))))));
     }
 
-    private List<HttpTps> parseHttpTpsResponse(SearchResponse<Void> response) {
-        List<HttpTps> httpTpsList = new ArrayList<>();
+    private static List<HttpTps> parseHttpTpsResponse(SearchResponse<Void> response) {
+        final List<HttpTps> httpTpsList = new ArrayList<>();
         response.aggregations()
                 .get("http_tps")
                 .dateHistogram()
@@ -251,15 +304,16 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                 .array()
                 .forEach(
                         bucket -> {
-                            long startEpochMillis = bucket.key();
-                            double tps = bucket.aggregations().get("tps").simpleValue().value();
+                            final long startEpochMillis = bucket.key();
+                            final double tps =
+                                    bucket.aggregations().get("tps").simpleValue().value();
                             httpTpsList.add(HttpTps.of(startEpochMillis, tps));
                         });
         httpTpsList.sort(Comparator.comparing(HttpTps::timestamp).reversed());
         return httpTpsList;
     }
 
-    private Aggregation statusCodeDistributionAggregation() {
+    private static Aggregation statusCodeDistributionAggregation() {
         return Aggregation.of(
                 a ->
                         a.nested(n -> n.path("attributes"))
@@ -283,12 +337,12 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                                                                                                 10))))));
     }
 
-    private List<StatusCodeBucket> parseStatusCodeDistributionResponse(
+    private static List<StatusCodeBucket> parseStatusCodeDistributionResponse(
             SearchResponse<Void> response) {
-        List<StatusCodeBucket> statusCodeBuckets = new ArrayList<>();
+        final List<StatusCodeBucket> statusCodeBuckets = new ArrayList<>();
 
         // 어그리게이션 이름을 통해 결과 추출
-        NestedAggregate nestedAttributes =
+        final NestedAggregate nestedAttributes =
                 response.aggregations().get("nested_attributes").nested();
 
         nestedAttributes
@@ -299,40 +353,41 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                 .array()
                 .forEach(
                         bucket -> {
-                            String statusCode = bucket.key().stringValue();
-                            long count = bucket.docCount();
-                            StatusCodeBucket statusCodeBucket =
+                            final String statusCode = bucket.key().stringValue();
+                            final long count = bucket.docCount();
+                            final StatusCodeBucket statusCodeBucket =
                                     StatusCodeBucket.of(statusCode, count);
                             statusCodeBuckets.add(statusCodeBucket);
                         });
         return statusCodeBuckets;
     }
 
-    private List<EndTimeBucket> parseHistogramResponse(SearchResponse<Void> response) {
-        List<EndTimeBucket> endTimeBuckets = new ArrayList<>();
+    private static List<EndTimeBucket> parseHistogramResponse(SearchResponse<Void> response) {
+        final List<EndTimeBucket> endTimeBuckets = new ArrayList<>();
 
-        Aggregate byEndTimeAgg = response.aggregations().get("by_end_time");
-        DateHistogramAggregate dateHistogram = byEndTimeAgg.dateHistogram();
+        final Aggregate byEndTimeAgg = response.aggregations().get("by_end_time");
+        final DateHistogramAggregate dateHistogram = byEndTimeAgg.dateHistogram();
 
         for (DateHistogramBucket dateBucket : dateHistogram.buckets().array()) {
-            long endEpochMillis = dateBucket.key();
+            final long endEpochMillis = dateBucket.key();
 
-            Map<String, Aggregate> attributesNested =
+            final Map<String, Aggregate> attributesNested =
                     dateBucket.aggregations().get("attributes_nested").nested().aggregations();
 
-            HistogramAggregate histogram = attributesNested.get("by_response_time").histogram();
+            final HistogramAggregate histogram =
+                    attributesNested.get("by_response_time").histogram();
 
-            List<ResponseTimeBucket> responseTimeBuckets = new ArrayList<>();
+            final List<ResponseTimeBucket> responseTimeBuckets = new ArrayList<>();
 
             for (HistogramBucket histogramBucket : histogram.buckets().array()) {
-                double responseTime = histogramBucket.key();
-                long count = histogramBucket.docCount();
-                ResponseTimeBucket responseTimeBucket =
+                final double responseTime = histogramBucket.key();
+                final long count = histogramBucket.docCount();
+                final ResponseTimeBucket responseTimeBucket =
                         ResponseTimeBucket.from(responseTime, count);
                 responseTimeBuckets.add(responseTimeBucket);
             }
-            long errorCount = attributesNested.get("error_status_count").filter().docCount();
-            EndTimeBucket endTimeBucket =
+            final long errorCount = attributesNested.get("error_status_count").filter().docCount();
+            final EndTimeBucket endTimeBucket =
                     EndTimeBucket.from(endEpochMillis, errorCount, responseTimeBuckets);
             endTimeBuckets.add(endTimeBucket);
         }
@@ -340,8 +395,8 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
         return endTimeBuckets;
     }
 
-    private Aggregation histogramAggregation() {
-        Aggregation byResponseTimeAgg =
+    private static Aggregation histogramAggregation() {
+        final Aggregation byResponseTimeAgg =
                 Aggregation.of(
                         a ->
                                 a.histogram(
@@ -350,7 +405,7 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                                                         .interval(200.0)
                                                         .minDocCount(1)));
 
-        Aggregation errorStatusCountAgg =
+        final Aggregation errorStatusCountAgg =
                 Aggregation.of(
                         a ->
                                 a.filter(
@@ -361,7 +416,7 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                                                                                 "attributes.data.http.status_code")
                                                                         .gte(JsonData.of(400)))));
 
-        Aggregation attributesNestedAgg =
+        final Aggregation attributesNestedAgg =
                 Aggregation.of(
                         a ->
                                 a.nested(n -> n.path("attributes"))
@@ -382,7 +437,7 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                                 .aggregations(Map.of("attributes_nested", attributesNestedAgg)));
     }
 
-    private Query nestedHttpUrlTermQuery(String endPointUrl) {
+    private static Query nestedHttpUrlTermQuery(String endPointUrl) {
         return QueryBuilders.nested(
                 n ->
                         n.path("attributes")
@@ -393,14 +448,14 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                                                                 .value(endPointUrl))));
     }
 
-    private List<Trace> extractTraces(CompositeAggregate spansByTrace) {
-        List<Trace> traces = new ArrayList<>();
+    private static List<Trace> extractTraces(CompositeAggregate spansByTrace) {
+        final List<Trace> traces = new ArrayList<>();
         spansByTrace
                 .buckets()
                 .array()
                 .forEach(
                         bucket -> {
-                            TopHitsAggregate spanDetails =
+                            final TopHitsAggregate spanDetails =
                                     bucket.aggregations().get("span_details").topHits();
                             spanDetails
                                     .hits()
@@ -410,7 +465,7 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                                                 if (hit.source() == null) {
                                                     return;
                                                 }
-                                                Trace trace =
+                                                final Trace trace =
                                                         mapToTrace(
                                                                 hit.source()
                                                                         .toJson()
@@ -422,7 +477,7 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
         return traces;
     }
 
-    private Aggregation createTraceAggregation(int size, Map<String, Object> afterKey) {
+    private static Aggregation createTraceAggregation(int size, Map<String, Object> afterKey) {
         return Aggregation.of(
                 a ->
                         a.composite(
@@ -482,42 +537,42 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                                                                                                                                         "attributes.data.anomaly")))))));
     }
 
-    private Query createServiceSpanQuery(TraceSearchCondition cond) {
-        Builder bool = QueryBuilders.bool();
+    private static Query createSearchQuery(ServiceSearchCondition cond) {
+        final Builder bool = QueryBuilders.bool();
 
         if (cond.hasServiceName()) {
-            bool.must(QueryBuilders.term(t -> t.field("serviceName").value(cond.serviceName())));
+            bool.must(QueryBuilders.term(t -> t.field("serviceName").value(cond.getServiceName())));
 
-            if (cond.hasEndPointUrl()) {
-                bool.must(nestedHttpUrlTermQuery(cond.endPointUrl()));
+            if (cond instanceof TraceSearchCondition traceCond && traceCond.hasEndPointUrl()) {
+                bool.must(nestedHttpUrlTermQuery(traceCond.getEndPointUrl().value()));
             }
         }
 
-        if (cond.hasTimeRange()) {
+        if (cond instanceof TraceSearchCondition traceCond && traceCond.hasTimeRange()) {
             bool.must(
                     QueryBuilders.range(
                             r ->
                                     r.field("startEpochMillis")
-                                            .gte(JsonData.of(cond.getEpochMillisStartTime()))),
+                                            .gte(JsonData.of(traceCond.getEpochMillisStartTime()))),
                     QueryBuilders.range(
                             r ->
                                     r.field("endEpochMillis")
-                                            .lte(JsonData.of(cond.getEpochMillisEndTime()))));
+                                            .lte(JsonData.of(traceCond.getEpochMillisEndTime()))));
         }
 
         bool.must(
-                QueryBuilders.term(t -> t.field("projectKey").value(cond.projectKey().value())),
+                QueryBuilders.term(t -> t.field("projectKey").value(cond.getProjectKey().value())),
                 QueryBuilders.term(t -> t.field("spanType").value("HTTP")),
                 QueryBuilders.term(t -> t.field("kind").value("SERVER")));
 
         return bool.build()._toQuery();
     }
 
-    private Aggregation createServiceNameAggregation() {
+    private static Aggregation createServiceNameAggregation() {
         return Aggregation.of(a -> a.terms(t -> t.field("serviceName").size(100)));
     }
 
-    private Query createSpanQuery(String projectKey, SpanType spanType, SpanKind spanKind) {
+    private static Query createSpanQuery(String projectKey, SpanType spanType, SpanKind spanKind) {
         return BoolQuery.of(
                         b ->
                                 b.must(
@@ -544,7 +599,7 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                 ._toQuery();
     }
 
-    private Map<String, FieldValue> toFieldValueMap(Map<String, Object> afterKey) {
+    private static Map<String, FieldValue> toFieldValueMap(Map<String, Object> afterKey) {
         return afterKey.entrySet().stream()
                 .map(
                         entry -> {
@@ -568,13 +623,13 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private Map<String, Object> toObjectMap(Map<String, FieldValue> afterKey) {
+    private static Map<String, Object> toObjectMap(Map<String, FieldValue> afterKey) {
         return afterKey.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue()._get()));
     }
 
-    private Trace mapToTrace(JsonObject source) {
-        JsonObject data = source.getJsonObject("attributes").getJsonObject("data");
+    private static Trace mapToTrace(JsonObject source) {
+        final JsonObject data = source.getJsonObject("attributes").getJsonObject("data");
 
         return Trace.builder()
                 .id(TraceId.from(source.getString("traceId")))
