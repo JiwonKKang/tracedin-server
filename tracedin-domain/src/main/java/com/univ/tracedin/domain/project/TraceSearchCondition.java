@@ -44,6 +44,9 @@ public class TraceSearchCondition extends ServiceSearchCondition {
     }
 
     public boolean hasEndPointUrl() {
+        if (endPointUrl == null) {
+            return false;
+        }
         return StringUtils.isNotBlank(endPointUrl.value());
     }
 }
