@@ -22,7 +22,7 @@ public record TraceSearchRequest(
         return TraceSearchCondition.builder()
                 .projectKey(ProjectKey.from(projectKey))
                 .serviceName(serviceName)
-                .endPointUrl(EndPointUrl.from(endPointUrl))
+                .endPointUrl((endPointUrl == null) ? null : EndPointUrl.from(endPointUrl))
                 .startTime(startTime)
                 .endTime(endTime)
                 .build();

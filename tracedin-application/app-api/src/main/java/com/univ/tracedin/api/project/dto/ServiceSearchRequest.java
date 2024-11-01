@@ -5,9 +5,6 @@ import com.univ.tracedin.domain.project.ServiceSearchCondition;
 
 public record ServiceSearchRequest(String projectKey, String serviceName) {
     public ServiceSearchCondition toCondition() {
-        return ServiceSearchCondition.builder()
-                .projectKey(ProjectKey.from(projectKey))
-                .serviceName(serviceName)
-                .build();
+        return new ServiceSearchCondition(ProjectKey.from(projectKey), serviceName);
     }
 }
