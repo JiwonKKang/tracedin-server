@@ -30,7 +30,7 @@ public class ProjectReader {
         return projectRepository.findById(projectId);
     }
 
-    public Project readByKey(ProjectKey projectKey) {
+    public Project read(ProjectKey projectKey) {
         return projectRepository.findByKey(projectKey);
     }
 

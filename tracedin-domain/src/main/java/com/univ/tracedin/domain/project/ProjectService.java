@@ -39,7 +39,7 @@ public class ProjectService {
     }
 
     public List<Node> getServiceNodeList(ProjectKey projectKey) {
-        final Project project = projectReader.readByKey(projectKey);
+        final Project project = projectReader.read(projectKey);
         return projectReader.readServiceNods(project);
     }
 
@@ -49,7 +49,7 @@ public class ProjectService {
     }
 
     public Topology getNetworkTopology(ProjectKey projectKey) {
-        final Project project = projectReader.readByKey(projectKey);
+        final Project project = projectReader.read(projectKey);
         return networkTopologyAnalyer.analyze(project);
     }
 
