@@ -594,7 +594,7 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                                                                 r.field("startEpochMillis")
                                                                         .gte(
                                                                                 JsonData.of(
-                                                                                        "now-5m"))))))
+                                                                                        "now-1m"))))))
                 ._toQuery();
     }
 
