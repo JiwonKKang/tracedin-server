@@ -79,7 +79,8 @@ redis:
 server:
   url: http://localhost:8089
 
-
+anomaly-detection:
+  url: http://localhost:8000/detect_anomalies
 ---
 spring:
   config:
@@ -151,3 +152,6 @@ kafka-application-id: tracedin-anomaly-streams
 
 server:
   url: ${SERVER_URL}
+
+anomaly-detection:
+  url: ${DETECTION_URL}

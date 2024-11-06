@@ -18,6 +18,9 @@ dependencies {
         exclude group: 'co.elastic.clients', module: 'elasticsearch-java'
     }
 
+    //web-client
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
     //slack
     implementation 'com.slack.api:slack-api-client:1.44.0'
 

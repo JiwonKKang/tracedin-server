@@ -586,16 +586,15 @@ public class SpanElasticSearchRepositoryCustomImpl implements SpanElasticSearchR
                                                                 t.field("spanType")
                                                                         .value(spanType.name())),
                                                 QueryBuilders.term(
-                                                        t -> t.field("kind").value(spanKind.name()))
-                                                //                                                ,
-                                                // QueryBuilders.range(r -> // 개발 진행 중에는 테스트를 위해 주석
-                                                // 처리
-                                                //
-                                                //      r.field("startEpochMillis")
-                                                //
-                                                //              .gte(JsonData.of("now-60s")))
-
-                                                )))
+                                                        t ->
+                                                                t.field("kind")
+                                                                        .value(spanKind.name())),
+                                                QueryBuilders.range(
+                                                        r ->
+                                                                r.field("startEpochMillis")
+                                                                        .gte(
+                                                                                JsonData.of(
+                                                                                        "now-5m"))))))
                 ._toQuery();
     }
 

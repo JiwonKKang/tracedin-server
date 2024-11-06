@@ -42,6 +42,10 @@ public class Span {
         return this;
     }
 
+    public void updateSpanType(SpanType spanType) {
+        this.spanType = spanType;
+    }
+
     public LocalDateTime getStartDateTime() {
         return timing.startDateTime();
     }

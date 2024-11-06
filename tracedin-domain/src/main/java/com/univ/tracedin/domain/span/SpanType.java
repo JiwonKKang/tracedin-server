@@ -16,7 +16,7 @@ public enum SpanType {
     }
 
     public static SpanType fromValue(String value) {
-        for (SpanType type : SpanType.values()) {
+        for (SpanType type : values()) {
 
             if (type.value.equalsIgnoreCase(value)) {
                 return type;

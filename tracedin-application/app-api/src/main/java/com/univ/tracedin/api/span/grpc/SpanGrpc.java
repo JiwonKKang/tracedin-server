@@ -2,7 +2,7 @@ package com.univ.tracedin.api.span.grpc;
 
 import static com.univ.tracedin.api.global.util.GrpcMappingUtils.convertValue;
 
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
@@ -47,49 +47,70 @@ public class SpanGrpc extends SpanGrpcAppenderImplBase {
     }
 
     private static Span toSpan(SpanProto.Span span) {
-        return Span.builder()
-                .id(SpanId.from(span.getSpanId()))
-                .traceId(TraceId.from(span.getTraceId()))
-                .parentId(SpanId.from(span.getParentSpanId()))
-                .name(span.getName())
-                .serviceName(span.getServiceName())
-                .projectKey(span.getProjectKey())
-                .spanType(SpanType.fromValue(span.getSpanType()))
-                .kind(SpanKind.fromValue(span.getKind()))
-                .timing(
-                        SpanTiming.builder()
-                                .startEpochMillis(nanosToMillis(span.getStartEpochNanos()))
-                                .endEpochMillis(nanosToMillis(span.getEndEpochNanos()))
-                                .build())
-                .status(SpanStatus.fromValue(span.getSpanStatus()))
-                .attributes(
-                        SpanAttributes.builder()
-                                .data(
-                                        span.getAttributes().getDataMap().entrySet().stream()
-                                                .collect(
-                                                        Collectors.toMap(
-                                                                Map.Entry::getKey,
-                                                                entry ->
-                                                                        convertValue(
-                                                                                entry.getValue()))))
-                                .capacity(span.getAttributes().getCapacity())
-                                .totalAddedValues(span.getAttributes().getTotalAddedValues())
-                                .build())
-                .events(
-                        span.getEventsList().stream()
-                                .map(
-                                        event ->
-                                                new SpanEvent(
-                                                        event.getName(),
-                                                        event.getAttributesMap().entrySet().stream()
-                                                                .collect(
-                                                                        Collectors.toMap(
-                                                                                Map.Entry::getKey,
-                                                                                Map.Entry
-                                                                                        ::getValue)),
-                                                        event.getEpochNanos()))
-                                .toList())
-                .build();
+        final Span tempSpan =
+                Span.builder()
+                        .id(SpanId.from(span.getSpanId()))
+                        .traceId(TraceId.from(span.getTraceId()))
+                        .parentId(SpanId.from(span.getParentSpanId()))
+                        .name(span.getName())
+                        .serviceName(span.getServiceName())
+                        .projectKey(span.getProjectKey())
+                        .spanType(SpanType.fromValue(span.getSpanType()))
+                        .kind(SpanKind.fromValue(span.getKind()))
+                        .timing(
+                                SpanTiming.builder()
+                                        .startEpochMillis(nanosToMillis(span.getStartEpochNanos()))
+                                        .endEpochMillis(nanosToMillis(span.getEndEpochNanos()))
+                                        .build())
+                        .status(SpanStatus.fromValue(span.getSpanStatus()))
+                        .attributes(
+                                SpanAttributes.builder()
+                                        .data(
+                                                span
+                                                        .getAttributes()
+                                                        .getDataMap()
+                                                        .entrySet()
+                                                        .stream()
+                                                        .collect(
+                                                                Collectors.toMap(
+                                                                        Entry::getKey,
+                                                                        entry ->
+                                                                                convertValue(
+                                                                                        entry
+                                                                                                .getValue()))))
+                                        .capacity(span.getAttributes().getCapacity())
+                                        .totalAddedValues(
+                                                span.getAttributes().getTotalAddedValues())
+                                        .build())
+                        .events(
+                                span.getEventsList().stream()
+                                        .map(
+                                                event ->
+                                                        new SpanEvent(
+                                                                event.getName(),
+                                                                event
+                                                                        .getAttributesMap()
+                                                                        .entrySet()
+                                                                        .stream()
+                                                                        .collect(
+                                                                                Collectors.toMap(
+                                                                                        Entry
+                                                                                                ::getKey,
+                                                                                        Entry
+                                                                                                ::getValue)),
+                                                                event.getEpochNanos()))
+                                        .toList())
+                        .build();
+
+        if (isDbQuery(tempSpan)) {
+            tempSpan.updateSpanType(SpanType.QUERY);
+        }
+
+        return tempSpan;
+    }
+
+    private static boolean isDbQuery(Span tempSpan) {
+        return tempSpan.getAttributes().data().containsKey("db.statement");
     }
 
     private static long nanosToMillis(long nanos) {
