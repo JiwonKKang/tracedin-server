@@ -29,7 +29,7 @@ public class SlackAlertClient implements AlertClient {
     private final Slack slackClient = Slack.getInstance();
 
     @Value("${server.url}")
-    private String serverUrl;
+    private String clientUrl;
 
     @Override
     public void sendAlert(String contact, Alert alert) {
@@ -66,7 +66,7 @@ public class SlackAlertClient implements AlertClient {
     private String generateLink(Alert alert) {
         final String traceId = alert.getDetails().get("traceId");
         final String encodedTraceId = URLEncoder.encode(traceId, StandardCharsets.UTF_8);
-        final String url = serverUrl + "/api/v1/spans/span-tree?traceId=" + encodedTraceId;
+        final String url = clientUrl + "/transactions/" + encodedTraceId;
         final String linkText = "여기";
 
         return '<' + url + '|' + linkText + '>';

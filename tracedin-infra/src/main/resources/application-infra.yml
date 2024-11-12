@@ -151,7 +151,7 @@ kafka-consumer-config:
 kafka-application-id: tracedin-anomaly-streams
 
 server:
-  url: ${SERVER_URL}
+  url: ${CLIENT_URL}
 
 anomaly-detection:
   url: ${DETECTION_URL}
