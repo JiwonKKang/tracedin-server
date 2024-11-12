@@ -17,10 +17,12 @@ public final class SpanTree {
     private List<SpanTree> children;
 
     public static SpanTree init(Span span) {
+
         return builder().span(span).children(new ArrayList<>()).build();
     }
 
     public SpanId getParentId() {
+        SpanId spanId = new SpanId();
         return span.getParentId();
     }
 

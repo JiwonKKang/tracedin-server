@@ -16,4 +16,8 @@ public enum SpanStatus {
         }
         throw new IllegalArgumentException("Unknown span status: " + spanStatus);
     }
+
+    public boolean isError() {
+        return this == ERROR;
+    }
 }

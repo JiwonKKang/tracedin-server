@@ -16,6 +16,9 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Span {
 
+    public static final String ROOT_SPAN_ID = "0000000000000000";
+    public static final String ANOMALY = "anomaly";
+
     private SpanId id;
     private TraceId traceId;
     private SpanId parentId;
@@ -30,7 +33,7 @@ public class Span {
     private List<SpanEvent> events;
 
     public boolean hasParent() {
-        return !Objects.equals(parentId.getValue(), "0000000000000000");
+        return !Objects.equals(parentId.getValue(), ROOT_SPAN_ID);
     }
 
     public long getDuration() {
@@ -38,7 +41,7 @@ public class Span {
     }
 
     public Span setAnomaly() {
-        attributes.data().put("anomaly", true);
+        attributes.data().put(ANOMALY, true);
         return this;
     }
 
@@ -48,5 +51,13 @@ public class Span {
 
     public LocalDateTime getStartDateTime() {
         return timing.startDateTime();
+    }
+
+    public boolean isError() {
+        return status.isError();
+    }
+
+    public SpanEvent getExceptionEvent() {
+        return events.stream().filter(SpanEvent::isExceptionEvent).findFirst().orElse(null);
     }
 }

@@ -1,5 +1,7 @@
 package com.univ.tracedin.api.span.dto;
 
+import static com.univ.tracedin.domain.span.Span.ANOMALY;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -22,7 +24,10 @@ public record SpanResponse(
         LocalDateTime startDateTime,
         Map<String, Object> data,
         Integer capacity,
-        Integer totalAddedValues) {
+        Integer totalAddedValues,
+        boolean anomaly,
+        boolean error,
+        StackTraceResponse stackTrace) {
 
     public static SpanResponse from(Span span) {
         return new SpanResponse(
@@ -40,6 +45,9 @@ public record SpanResponse(
                 span.getStartDateTime(),
                 span.getAttributes().data(),
                 span.getAttributes().capacity(),
-                span.getAttributes().totalAddedValues());
+                span.getAttributes().totalAddedValues(),
+                span.getAttributes().data().containsKey(ANOMALY),
+                span.isError(),
+                span.isError() ? StackTraceResponse.from(span.getExceptionEvent()) : null);
     }
 }
