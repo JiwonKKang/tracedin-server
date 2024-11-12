@@ -53,6 +53,10 @@ public class Span {
         return timing.startDateTime();
     }
 
+    public boolean isAnomaly() {
+        return attributes.data().containsKey(ANOMALY);
+    }
+
     public boolean isError() {
         return status.isError();
     }
