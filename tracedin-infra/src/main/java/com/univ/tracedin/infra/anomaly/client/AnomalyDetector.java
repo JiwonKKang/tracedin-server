@@ -8,7 +8,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import com.univ.tracedin.domain.span.Span;
 import com.univ.tracedin.infra.anomaly.client.dto.DetectRequest;
 
-@Component
 @RequiredArgsConstructor
 @Slf4j
 public class AnomalyDetector implements AnomalyDetectionClient {
