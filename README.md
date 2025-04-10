@@ -33,26 +33,32 @@ WAS에 주입되는 트레이스와 메트릭 데이터를 효율적으로 수�
 # 서비스 화면
 <table>
   <tr>
-    <td>
+    <td align="center">
       <img src="https://github.com/user-attachments/assets/8cd23f5d-31e0-479c-b4b4-fae0737a48eb" width="720" />
+      <p><b>네트워크 토폴로지</b></p>
     </td>
-    <td>
+    <td align="center">
       <img src="https://github.com/user-attachments/assets/f6d8d8a7-fdf8-4424-8d6c-ff24827234cf" width="720" />
+      <p><b>엔드포인트별 통계</b></p>
     </td>
   </tr>
   <tr>
-    <td>
+    <td align="center">
       <img src="https://github.com/user-attachments/assets/ded5eb5f-c17c-4a7b-84a8-0758566df413" width="720" />
+      <p><b>트랜잭션 상세</b></p>
     </td>
-    <td>
+    <td align="center">
       <img src="https://github.com/user-attachments/assets/480437ad-2859-4256-a62b-04af4e9aca4e" width="720" />
+      <p><b>트랜잭션 히트맵 및 목록</b></p>
     </td>
   </tr>
 </table>
 
+
 ## 시스템 아키텍쳐
 
-![안녕하세요 백엔드 개발자 강지원입니다 (3)](https://github.com/user-attachments/assets/327ab301-69b4-48e8-ac5b-a401aa3b8ec7)
+<img width="1035" alt="image" src="https://github.com/user-attachments/assets/b721bedc-d444-4d08-ae07-4cabb331c2ef" />
+
 
 # 챌린지
 
@@ -115,7 +121,7 @@ REST 방식과 gRPC 방식의 장단점을 실제로 비교해볼 수 있었고,
 ### 성과
 
 - API 응답 시간 단축
-- 코드 가독성 및 유지보수성 향상
+- 코드 가독성 및 유지보수성 향상([Before](https://github.com/tracedin/tracedin-server/blob/963c337b940dcca226be96b406eba37d7ab0b071/tracedin-domain/src/main/java/com/univ/tracedin/domain/span/SpanStatisticsAnalyzer.java#L48-L173) → [After](https://github.com/tracedin/tracedin-server/blob/6e4359962f0e0b84a5e5ea6093e44617e4631893/tracedin-domain/src/main/java/com/univ/tracedin/domain/span/SpanStatisticsAnalyzer.java#L48-L77))
 
 ### 배운 점
 
